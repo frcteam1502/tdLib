@@ -25,7 +25,7 @@ public class PartBuilder<T extends Builder>  {
         return new PartBuilder<T>(this, modifyFunction);
     }
     private PartBuilder(PartBuilder<T> partBuilder, Function<T, Builder> modifyFunction) {
-        this.partBuilder = partBuilder;
+        this.templateBuilder = partBuilder;
         this.buildFunction = modifyFunction;
     }
 
@@ -33,19 +33,21 @@ public class PartBuilder<T extends Builder>  {
     
     /** this is the intended/default name from the template */
     private String partName;
+    /** this function creates the builder-of-part when there is no template (templateBuilder) */
     private Function<IBuild, T> createFunction;
+    /** additional modifications to part after created */
     private Function<T, Builder> buildFunction;
 
-    /** nested builder */
-    private PartBuilder<T> partBuilder;
+    /** this is a template for this part, takes precedence ovr createFunction */
+    private PartBuilder<T> templateBuilder;
     
     //this part must be named and parented and registered before the buildFunction
     public T addBuilder(Builder parent) { return addBuilder(parent, null); }
 
     public T addBuilder(Builder parent, String name) {
         T builder = null;
-        if (partBuilder != null) {
-            builder = partBuilder.addBuilder(parent, name);
+        if (templateBuilder != null) {
+            builder = templateBuilder.addBuilder(parent, name);
         } else {
             builder = createFunction.apply(parent.getIBuild());
             if (partName != null) {
@@ -61,21 +63,13 @@ public class PartBuilder<T extends Builder>  {
         return build(builder);
     }
     
-    private T build(T builder) {
-        if (buildFunction != null) { // may just need a "Define"
-            buildFunction.apply(builder);
-        }
-        return builder;
-    }
-
-    // public T createBuilder(IBuild build) {
-    //     return createBuilder(build, null);
-    // }
-
+    /** 1. create builder-of-part (from template or createFunction)
+        2. build part with (optional) buildFunction
+     */
     public T createBuilder(IBuild build, String name) {
         T builder = null;
-        if (partBuilder != null) {
-            builder = partBuilder.createBuilder(build, name);
+        if (templateBuilder != null) {
+            builder = templateBuilder.createBuilder(build, name);
         } else {
             builder = createFunction.apply(build);
             if (partName != null) {
@@ -89,22 +83,12 @@ public class PartBuilder<T extends Builder>  {
         }
         return build(builder);
     }
-
-/*
-    public static <T extends Builder> T createBuilder(IBuild build, String name, Function<IBuild, T> createFunction, Function<T, Builder> buildFunction) {
-        T builder = createFunction.apply(build);
-        builder.Value(Part.BUILD_NAME, name);
-        buildFunction.apply(builder);
-        return builder;
-    }
-    public static <T extends Builder> T createBuilder(IBuild build, Function<IBuild, T> createFunction, Function<T, Builder> buildFunction) {
-        T builder = createFunction.apply(build);
-        var buildType = builder.getString(Builder.CLASS_NAME, "");
-        if (buildType != "") {
-            builder.Value(Part.BUILD_NAME, buildType);
+    
+    private T build(T builder) {
+        if (buildFunction != null) { // may just need a "Define"
+            buildFunction.apply(builder);
         }
-        buildFunction.apply(builder);
         return builder;
     }
- */
+
 }

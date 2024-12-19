@@ -25,7 +25,6 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
     private Builder _subsystemPart;
     public Builder getPart() { return _subsystemPart; }
 
-    //private Part _part;
     private RobotBuilder(RobotBuilder parent, String name) {
         // todo, look for existing part "sub-factory"
         _parent = parent;
@@ -100,7 +99,7 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
         if (_parent != null) {
             _parent.register(part);
         } else {
-            part.setValue("created", _parts.size()); // in case they should be ordered by creation
+            part.setValue(Part.CREATED_NAME, _parts.size()); // in case they should be ordered by creation
         }
     }
 
@@ -227,8 +226,8 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
     public RobotBuilder SwerveDrive(Function<SwerveDrive, Builder> fn) {        
         return installBuilder(SwerveDrive.CLASSNAME, SwerveDrive.CLASSNAME, SwerveDrive.Define, fn);
     }    
-    public RobotBuilder SwerveModule(String name, Function<SwerveModule, Builder> fn) {        
-        return installBuilder(name, SwerveModule.CLASSNAME, SwerveModule.Define, fn);
+    public RobotBuilder SwerveModule(String name, Function<SwerveModuleBuilder, Builder> fn) {        
+        return installBuilder(name, SwerveModuleBuilder.CLASSNAME, SwerveModuleBuilder.Define, fn);
     }    
 
     // Basic Parts

@@ -9,8 +9,10 @@ import org.team1502.configuration.builders.Part;
 
 import java.util.function.Function;
 
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import edu.wpi.first.units.measure.Angle;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 
@@ -49,7 +51,7 @@ public class CANCoder extends Builder{ // Accelerometer {
         return this;
     }
 
-    public double MagneticOffset() { return getDouble(magneticOffset); }
+    public double MagneticOffset() { return getDouble(magneticOffset, 0); }
     public CANCoder MagneticOffset(double degrees) {
         setValue(CANCoder.magneticOffset, degrees);
         return this;
@@ -69,7 +71,7 @@ public class CANCoder extends Builder{ // Accelerometer {
             new CANcoderConfiguration().MagnetSensor
             .withMagnetOffset(-MagneticOffset()/360.0)
             .withSensorDirection(Direction())
-            .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Unsigned_0To1)
+            .withAbsoluteSensorDiscontinuityPoint(1)
         );
         return encoder;
     }
@@ -80,7 +82,7 @@ public class CANCoder extends Builder{ // Accelerometer {
             new CANcoderConfiguration().MagnetSensor.withMagnetOffset(-offset));
         }
     }
-    public double getPosition() {
+    public Angle getPosition() {
         return CANcoder().getAbsolutePosition().getValue();   
     }
 

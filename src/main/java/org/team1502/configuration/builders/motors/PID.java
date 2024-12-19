@@ -2,8 +2,9 @@ package org.team1502.configuration.builders.motors;
 
 import java.util.function.Function;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.controller.PIDController;
 import org.team1502.configuration.builders.Builder;
@@ -62,13 +63,28 @@ public class PID extends Builder {
         return pidController;
     }
 
-    public SparkPIDController setPIDController(CANSparkMax motor) {
-        var pidController = motor.getPIDController();
+    public SparkMaxConfig setPIDController(SparkMaxConfig config) {
+        config.closedLoop.pid(P(),I(), D());
+        if (hasValue("ff")) {
+            config.closedLoop.velocityFF(FF());
+        }
+        if (hasValue("min") && hasValue("max")) {
+            config.closedLoop.outputRange(getDouble("min"), getDouble("max"));
+        }
+        return config;
+    }
+    /*
+     * 
+    public SparkMaxConfig setPIDController(SparkMax motor) {
+        return setPIDController(new SparkMaxConfig())
+    }
+    public SparkClosedLoopController setPIDController(SparkMax motor) {
+        var pidController = motor.getClosedLoopController();
         setPIDController(pidController);
         return pidController;
     }
     
-    public void setPIDController(SparkPIDController pidController) {
+    public void setPIDController(SparkClosedLoopController pidController) {
         pidController.setP(P());
         pidController.setI(I());
         pidController.setD(D());
@@ -80,6 +96,7 @@ public class PID extends Builder {
         }
     
     }
+     */
 
 }
 /* NOTE: 4 PID slots (e.g., per reference?)

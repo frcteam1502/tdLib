@@ -64,7 +64,7 @@ public class Encoder extends Builder {
 
     public double getPositionDegrees(){
         //REV Encoder is CCW+
-        double angleDegrees = DutyCycleEncoder().getAbsolutePosition()*360;
+        double angleDegrees = DutyCycleEncoder().get()*360;
         return angleDegrees - 360 - getDouble(Encoder.offset, 0.0);
     }
     

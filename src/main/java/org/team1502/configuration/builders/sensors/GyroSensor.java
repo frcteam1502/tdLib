@@ -41,8 +41,7 @@ public class GyroSensor extends Builder {
 */
 
     public boolean Reversed() {
-        var result = getBoolean(isReversed);
-        return result == null ? false : result;
+        return getBoolean(isReversed, false);
     }
     public GyroSensor Reversed(boolean value) {
         setValue(isReversed, value);

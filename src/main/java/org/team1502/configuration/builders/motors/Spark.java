@@ -5,9 +5,8 @@ import java.util.function.Function;
 import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
-import org.team1502.configuration.builders.RoboRIO;
 
-public class Spark extends Builder { // PWMMotorController
+public class Spark extends Builder { // PWMMotorController, e.g., Blinken controller
     private static final String isReversed = "isReversed";
     private static final String _spark_ = "_spark_";
     
@@ -18,16 +17,11 @@ public class Spark extends Builder { // PWMMotorController
     public static Spark WrapPart(Builder builder, String partName) { return Wrap(builder.getPart(partName)); }
     public Spark(IBuild build) {
          super(build, CLASSNAME);
-         //addConnector(POWER, "Vin").FriendlyName("Power connector");
-        // var abs = addConnector(team1502.configuration.builders.Channel.SIGNAL_PWM, name);
-        // abs.Value(RoboRIO.digitalInput, channel); // 0-9 is onboard
-        // abs.connectToChannel(RoboRIO.CLASSNAME, channel);
-}
+    }
 
     public Spark(IBuild build, Part part) { super(build, part); }
     public boolean IsReversed() {
-        var result = getBoolean(isReversed);
-        return result == null ? false : result;
+        return getBoolean(isReversed, false);
     }
     
     /** invert the direction of a speed controller */

@@ -25,6 +25,10 @@ public class Chassis extends Builder {
 
   public Chassis(IBuild build) { super(build, NAME); }
   public Chassis(IBuild build, Part part) { super(build, part); }
+  
+  public Chassis Frame(double inches) {
+    return this; // TODO? and bumpers for navigation shadow
+  }
 
   public Chassis Square(double inches) {
       Value(chassisLayout, "square");
@@ -45,6 +49,7 @@ public class Chassis extends Builder {
   public double getWheelDiameter() { return getMeters(wheelDiameter); }
   /** Wheel Diameter (in)  */
   public double WheelDiameter() { return getDouble(wheelDiameter); }
+  /** Wheel Diameter */
   public Chassis WheelDiameter(double inches) {
     Value(wheelDiameter, inches);
     return this;

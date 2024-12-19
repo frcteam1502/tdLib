@@ -12,15 +12,18 @@ import org.team1502.configuration.CAN.CanInfo;
 import org.team1502.configuration.CAN.DeviceType;
 import org.team1502.configuration.CAN.Manufacturer;
 import org.team1502.configuration.builders.pneumatics.PneumaticsController;
+import org.team1502.configuration.builders.power.Power;
 import org.team1502.configuration.builders.power.PowerDistributionModule;
 import org.team1502.configuration.builders.power.PowerProfile;
 import org.team1502.configuration.factory.PartBuilder;
 
+/** base class that wraps a generic Part (and sub-parts) with context and methods to represent hardware component
+ * may contain information about a robot part
+ * may be able to create and configure a robot software object
+ */
 public class Builder {
     private static final String CLASSNAME = "Builder";
     
-    public static final String POWER = Channel.SIGNAL_12VDC;
-
     public static Function<IBuild, Builder> Define = b->new Builder(b);
     public static Function<IBuild, Builder> DefineAs(String buildType) {
         return build->new Builder(build, buildType);
@@ -305,6 +308,10 @@ public class Builder {
 
     Connector connectTo(String hubName, Object channelID) {
         var hub = getIBuild().getInstalled(hubName);
+        if (hub == null) {
+            addError("connectTo: " + hubName + " -- not found" );
+            return null;
+        }
         return connectTo(hub, channelID);
     }
 
@@ -399,6 +406,7 @@ public class Builder {
         addPart(CanInfo.Define(deviceType, manufacturer));
         return this;
     }
+    public CanInfo CanInfo() { return CanInfo.WrapPart(this); }
     public Integer CanNumber() { return CanInfo.WrapPart(this).Number(); }
     public Builder CanNumber(int number) {
         CanInfo.WrapPart(this).Number(number);
@@ -463,7 +471,7 @@ public class Builder {
     }
 
     public Builder Powers(Builder builder) {
-        this.addChannel(POWER, builder);
+        this.addChannel(Power.Signal, builder);
         return this;
     }
 

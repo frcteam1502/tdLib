@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import org.team1502.configuration.builders.*;
@@ -58,7 +58,7 @@ public class RobotConfiguration {
         return _robotBuilder;
     }
 
-    private PartFactory getFactory() {
+    PartFactory getFactory() {
         return getBuilder().getPartFactory();
     }
     
@@ -135,7 +135,7 @@ public class RobotConfiguration {
 
     public Chassis Chassis() { return Values().SwerveDrive().Chassis(); }
     public SwerveDrive SwerveDrive() { return Values().SwerveDrive(); }
-    public SwerveModule SwerveModule(String name) { return Values().SwerveDrive().SwerveModule(name); }
+    public SwerveModuleBuilder SwerveModule(String name) { return Values().SwerveDrive().SwerveModule(name); }
     public PowerDistributionModule MPM(String name) { return Values().MPM(name); }
     public PowerDistributionModule PDH() { return Values().PDH(); }
     public IMU Pigeon2() { return Values().Pigeon2(); }
@@ -148,29 +148,29 @@ public class RobotConfiguration {
     public PneumaticsController PCM() { return Values().PCM(); }
 
     public void registerLoggerObjects(
-            BiConsumer<String, CANSparkMax> motorLogger,
+            BiConsumer<String, SparkMax> motorLogger,
             Consumer<Pigeon2> pigeonLogger,
             BiConsumer<String, CANcoder> encoderLogger,
             BiConsumer<String, DoubleSupplier> sensorLogger
         ) {
 
-        for (SwerveModule sm : SwerveDrive().getModules()) {
+        for (SwerveModuleBuilder sm : SwerveDrive().getModules()) {
             var drive = sm.DrivingMotor();
             motorLogger.accept(drive.FriendlyName() + " Drive", drive.CANSparkMax());    
         }
-        for (SwerveModule sm : SwerveDrive().getModules()) {
+        for (SwerveModuleBuilder sm : SwerveDrive().getModules()) {
             var drive = sm.TurningMotor();
             motorLogger.accept(drive.FriendlyName() + " Turn", drive.CANSparkMax());    
         }
         
         pigeonLogger.accept(Pigeon2().Pigeon2());
 
-        for (SwerveModule sm : SwerveDrive().getModules()) {
+        for (SwerveModuleBuilder sm : SwerveDrive().getModules()) {
             var drive = sm.Encoder();
             encoderLogger.accept(drive.FriendlyName() + " Abs", drive.CANcoder());    
         }
 
-        for (SwerveModule sm : SwerveDrive().getModules()) {
+        for (SwerveModuleBuilder sm : SwerveDrive().getModules()) {
             sensorLogger.accept(sm.Abbreviation() + " Drive Speed", ()->sm.getSwerveModuleInstance().getVelocity());    
         }
     }

@@ -3,19 +3,24 @@ package org.team1502.configuration.builders.motors;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.MotorFeedbackSensor;
+import edu.wpi.first.math.util.Units;
+
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
 import org.team1502.configuration.CAN.DeviceType;
 import org.team1502.configuration.CAN.Manufacturer;
 import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
+import org.team1502.configuration.builders.power.Power;
 
 public class MotorController extends Builder {
     private static final DeviceType deviceType = DeviceType.MotorController; 
@@ -24,11 +29,12 @@ public class MotorController extends Builder {
     private static final String isReversed = "isReversed";
     private static final String closedLoopRampRate = "closedLoopRampRate";
     private static final String smartCurrentLimit = "smartCurrentLimit";
-    /** Wheel Diameter (m) */
+    /** Wheel Diameter (in) */
     public static final String wheelDiameter = "wheelDiameter";
     public static final String isAngleController = "isAngleController";
     public static final String angleMin = "angleMin";
     public static final String angleMax = "angleMax";
+    public static final String hasPID = "hasPID"; // has config for built-in pid
     
     public static final Function<IBuild, MotorController> Define(Manufacturer manufacturer) {
         return build->new MotorController(build,manufacturer);
@@ -40,8 +46,8 @@ public class MotorController extends Builder {
     // Define
     public MotorController(IBuild build, Manufacturer manufacturer) {
         super(build, deviceType, manufacturer);
-        addConnector(POWER, "Vin").FriendlyName("Power connector");
-        addChannel(POWER, "Vout").FriendlyName("Motor Power Out");
+        addConnector(Power.Signal, Power.Vin).FriendlyName(Power.Connector);
+        addChannel(Power.Signal, Power.Vout).FriendlyName("Motor Power Out");
     }
     public MotorController(IBuild build, Part part) {
         super(build, part);
@@ -71,8 +77,7 @@ public class MotorController extends Builder {
     }
     
     public boolean IsReversed() {
-        var result = getBoolean(isReversed);
-        return result == null ? false : result;
+        return getBoolean(isReversed, false);
     }
     
     /** invert the direction of a speed controller */
@@ -101,12 +106,20 @@ public class MotorController extends Builder {
     }
     
     public PID PID() { return PID.WrapPart(this); }
+    /** PID values for built-in CLosed Loop Controller ONLY*/
     public MotorController PID(Function<PID, Builder> fn) {
+        Value(hasPID, true);
         return (MotorController)AddPart(PID.Define, fn);
     }
+    /** Define a WPIlib PIDController */
+    public MotorController PIDController(Function<PID, Builder> fn) {
+        return (MotorController)AddPart(PID.Define, fn);
+    }
+    /** PID values for built-in CLosed Loop Controller ONLY*/
     public MotorController PID(double p, double i, double d) {
         return PID(pid->pid.P(p).I(i).D(d));
     }
+    /** PID values for built-in CLosed Loop Controller ONLY */
     public MotorController PID(double p, double i, double d, double ff) {
         return PID(pid->pid.P(p).I(i).D(d).FF(ff));
     }
@@ -124,36 +137,50 @@ public class MotorController extends Builder {
         return this;
     }
 
-    public SparkPIDController buildPIDController(MotorFeedbackSensor feedbackDevice) {
-        var pid = PID().setPIDController(CANSparkMax());
-        pid.setFeedbackDevice(feedbackDevice);
-        return pid;
-    }
-    public SparkPIDController buildPIDController() {
-        return PID().setPIDController(CANSparkMax());
+    // public SparkClosedLoopController buildPIDController(MotorFeedbackSensor feedbackDevice) {
+    //     var pid = PID().setPIDController(CANSparkMax());
+    //     pid.setFeedbackDevice(feedbackDevice);
+    //     return pid;
+    // }
+    public SparkClosedLoopController getPIDController() {
+        //return PID().setPIDController(CANSparkMax());
+        return CANSparkMax().getClosedLoopController();
     }
 
-    public CANSparkMax buildSparkMax() {
-        var motor = CANSparkMax(new CANSparkMax(CanNumber(), Motor().MotorType()));
-        motor.setIdleMode(IdleMode());
-        motor.setInverted(IsReversed());
+    public SparkMax buildSparkMax() {
+        var max = CANSparkMax(new SparkMax(CanNumber(), Motor().MotorType()));
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode());
+        config.inverted(IsReversed());
         if (hasValue(closedLoopRampRate)) {
-            motor.setClosedLoopRampRate(ClosedLoopRampRate());
+            config.closedLoopRampRate(ClosedLoopRampRate());
         }
         if (hasValue(smartCurrentLimit)) {
-            motor.setSmartCurrentLimit(SmartCurrentLimit());
+            config.smartCurrentLimit(SmartCurrentLimit());
         }
+        if (getBoolean(hasPID, false)){
+            PID().setPIDController(config);
+        }
+
+        // NOTE: ensure this fails gracefully if no factors present
+        // and doesn't have any other side effects if no conversion it intended
+        config.encoder.positionConversionFactor(getPositionConversionFactor());
+        config.encoder.velocityConversionFactor(getVelocityConversionFactor());
+
+        //TODO: test Follower logic;
         if (hasValue("Follower")) {
             var follower = Follower();
             var followerMotor = follower.buildSparkMax();
-            followerMotor.follow(motor, follower.IsReversed());
+            config.follow(followerMotor, follower.IsReversed());
         }
-        return motor;
+        
+        max.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        return max;
     }
-    public CANSparkMax CANSparkMax() {
-        return (CANSparkMax)Value("CANSparkMax");
+    public SparkMax CANSparkMax() {
+        return (SparkMax)Value("CANSparkMax");
     }
-    public CANSparkMax CANSparkMax(CANSparkMax motor) {
+    public SparkMax CANSparkMax(SparkMax motor) {
         Value("CANSparkMax", motor);
         return motor;
     }
@@ -163,42 +190,78 @@ public class MotorController extends Builder {
     }
     public double getPosition() { return getRelativeEncoder().getPosition(); }
     public RelativeEncoder setPosition(double position) {
-        CANSparkMax().getPIDController().setReference(position, ControlType.kPosition);
+        CANSparkMax().getClosedLoopController().setReference(position, ControlType.kPosition);
         return getRelativeEncoder(); 
     }
 
-    SwerveModule getSwerveModule() {
-        var parent = getParentOfType(SwerveModule.CLASSNAME);
-        return parent == null ? null : SwerveModule.Wrap(parent);
+    SwerveModuleBuilder getSwerveModule() {
+        var parent = getParentOfType(SwerveModuleBuilder.CLASSNAME);
+        return parent == null ? null : SwerveModuleBuilder.Wrap(parent);
     }
+
+    /** add encoder conversion factors to existing configuration 
     public RelativeEncoder buildRelativeEncoder() {
-        var encoder = getRelativeEncoder();
-        encoder.setPositionConversionFactor(getPositionConversionFactor());
-        encoder.setVelocityConversionFactor(getVelocityConversionFactor());
-        return encoder;
+        SparkMaxConfig config = new SparkMaxConfig();
+
+        config.encoder.positionConversionFactor(getPositionConversionFactor());
+        config.encoder.velocityConversionFactor(getVelocityConversionFactor());
+
+        SparkMax max = CANSparkMax();
+        max.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
+        return getRelativeEncoder();
     }
+    */
 
     /** mpr * 60 = position/minute (like rpm)  */
     public double getVelocityConversionFactor() { return getPositionConversionFactor()/60;  }
+
+    /** radians for angles, meters for linear */
     public double getPositionConversionFactor() {
-        var circumference = getBoolean(MotorController.isAngleController, false)
-                            ? 2
-                            : getWheelDiameter();
-        return circumference * Math.PI * getGearBoxRatio(); 
-    }
-    private double getGearBoxRatio() { return GearBox() != null ? GearBox().GearRatio() : 1.0; }
-    private double getWheelDiameter() { return findDouble(MotorController.wheelDiameter, 1.0); }
-    public double calculateMaxSpeed() { return calculateMaxSpeed(getWheelDiameter()); }
-    public double calculateMaxSpeed(Double wheelDiameter) {
-        return Motor().FreeSpeedRPM() / 60.0
-        * GearBox().GearRatio()
-        * wheelDiameter * Math.PI; 
+        return getTotalEncoderConversionFactor(); 
     }
 
-    public void registerLoggerObjects(BiConsumer<String, CANSparkMax> motorLogger) {
+    /** GearBox can have an optional wheel/actuator as a kind of final stage */
+    private double getTotalEncoderConversionFactor() {
+        double ratio = 1.0;
+        if (GearBox() != null) {
+            ratio = getGearRatio();
+            if (GearBox().hasActuator()) {
+                return ratio; //all done and accounted for
+            }
+        }
+        if (getBoolean(MotorController.isAngleController, false)) {
+            return 2 * Math.PI * ratio;
+        }
+        // at this point we have a gear-ratio or 1.0, but for position to make sense we need a length
+        double length = getWheelDiameter() * Math.PI;
+        return ratio * length;
+    }
+
+    private double getGearRatio() { return GearBox() != null ? GearBox().GearRatio() : 1.0; }
+
+    /** meters (1) */
+    private double getWheelDiameter() {
+        double inches = findDouble(MotorController.wheelDiameter, Double.NaN);
+        return Double.isNaN(inches) ? 1.0 : Units.inchesToMeters(inches);
+    }
+
+    /** meters/second */
+    public double calculateMaxSpeed() {
+        return Motor().FreeSpeedRPM() / 60.0 * getTotalEncoderConversionFactor();
+    }
+    /** in wheel diameter units/second */
+    public double calculateMaxSpeed(Double wheelDiameter) {
+        return Motor().FreeSpeedRPM() / 60.0
+                * getGearRatio()
+                * wheelDiameter * Math.PI; 
+    }
+
+    public void registerLoggerObjects(BiConsumer<String, SparkMax> motorLogger) {
         motorLogger.accept(FriendlyName(), CANSparkMax());
         if (hasValue("Follower")) {
             Follower().registerLoggerObjects(motorLogger);
         }
     }
+
 }

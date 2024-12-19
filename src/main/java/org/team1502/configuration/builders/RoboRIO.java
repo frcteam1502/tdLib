@@ -5,6 +5,7 @@ import java.util.function.Function;
 import org.team1502.configuration.CAN.CanInfo;
 import org.team1502.configuration.CAN.DeviceType;
 import org.team1502.configuration.CAN.Manufacturer;
+import org.team1502.configuration.builders.power.Power;
 
 /** https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-introduction.html 
  * The roboRIO is a reconfigurable robotics controller that includes built-in ports for
@@ -32,9 +33,9 @@ public class RoboRIO extends Builder {
         FriendlyName("roboRIO");
         AddCAN();
         //addPart(Builder.DefineAs(Channel.SIGNAL_CAN)).FriendlyName("CAN port");
-        addConnector(POWER, "INPUT").FriendlyName("Power connector");
+        addConnector(Power.Signal, "INPUT").FriendlyName(Power.Connector);
         addConnector(Channel.SIGNAL_ETH, "Ethernet").FriendlyName("Ethernet port");
-        addChannel(POWER, "RSL").FriendlyName("RSL port");
+        addChannel(Power.Signal, "RSL").FriendlyName("RSL port");
         AddDIO();
         AddPWM();
         // I2C

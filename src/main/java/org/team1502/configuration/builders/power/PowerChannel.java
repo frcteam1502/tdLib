@@ -16,7 +16,7 @@ public class PowerChannel extends Channel {
     public static PowerChannel WrapPart(Builder builder, String partName) { return Wrap(builder.getPart(partName)); }
 
     public PowerChannel(IBuild build, String network, Object channelNumber) { 
-        super(build, POWER, network, channelNumber);
+        super(build, Power.Signal, network, channelNumber);
     }
     public PowerChannel(IBuild build, Part part) { super(build, part); }
 
@@ -28,7 +28,7 @@ public class PowerChannel extends Channel {
     }
     
     public static PowerChannel findConnectedChannel(Builder device) {
-        var vin = device.findConnector(POWER);
+        var vin = device.findConnector(Power.Signal);
         return Wrap(vin.Connection());
     }
 
@@ -46,7 +46,7 @@ public class PowerChannel extends Channel {
         if (part.hasPowerProfile()) {
             totalPower = part.PowerProfile().PeakPower();
         }
-        var channels = getChannels(part, POWER).stream().map(ch->Wrap(ch)).toList();
+        var channels = getChannels(part, Power.Signal).stream().map(ch->Wrap(ch)).toList();
         for (PowerChannel ch : channels) {
             totalPower += getTotalPeakPower(ch);
         }        

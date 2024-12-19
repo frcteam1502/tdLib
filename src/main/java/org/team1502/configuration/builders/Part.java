@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/** A basic hierarchical generic unit with a parent, values (map), and pieces (list)  */
 public class Part {
     private HashMap<String, Object> _values = new HashMap<>();
     private ArrayList<Part> _pieces = new ArrayList<>();
@@ -14,6 +15,8 @@ public class Part {
     /** override the key */
     public static String KEY_NAME = "keyName";
     public static String TEMPLATE_NAME = "templateName";
+    /** order of creation */
+    public static String CREATED_NAME = "created";
 
     // COMMON Value keys useful when working with parts
     static String CLASS_NAME = "className";

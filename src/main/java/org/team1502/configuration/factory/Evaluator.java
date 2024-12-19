@@ -12,6 +12,7 @@ import org.team1502.configuration.builders.pneumatics.*;
 import org.team1502.configuration.builders.power.*;
 import org.team1502.configuration.builders.sensors.*;
 
+/** Evaluator will find a (named) Builder and "wrap" it with sub-class of a specific component */
 public class Evaluator {
     private HashMap<String, EvaluatorArgs> _valueMap = new HashMap<>(); 
     private RobotBuilder _configuration;
@@ -125,8 +126,11 @@ public class Evaluator {
     public <U> U MotorController(String partName, Function<MotorController, U> fn) {
         return getValue(partName, b->MotorController.Wrap(b), fn);   
     }
-    public <U> U SwerveModule(String partName, Function<SwerveModule, U> fn) {
-        return getValue(partName, b->SwerveModule.Wrap(b), fn);   
+    public SwerveModuleBuilder SwerveModule(String partName) {
+        return getValue(partName, b->SwerveModuleBuilder.Wrap(b), sm->sm);   
+    }
+    public <U> U SwerveModule(String partName, Function<SwerveModuleBuilder, U> fn) {
+        return getValue(partName, b->SwerveModuleBuilder.Wrap(b), fn);   
     }
     public PowerDistributionModule MPM(String partName) {
         return getValue(partName, b->PowerDistributionModule.Wrap(b), p->p);   

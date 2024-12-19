@@ -2,13 +2,18 @@ package org.team1502.configuration.builders.motors;
 
 import java.util.function.Function;
 
-import com.revrobotics.CANSparkLowLevel;
+import com.revrobotics.spark.SparkLowLevel;
 
 import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
+import org.team1502.configuration.builders.power.Power;
 
 public class Motor extends Builder {
+    public static final String NEO = "NEO";
+    public static final String NEO550 = "NEO-550";
+    public static final String VORTEX = "NEO-VORTEX";
+
     public static final String idleMode = "idleMode";
     public static final String motorType = "motorType";
     public static final String freeSpeedRPM = "freeSpeedRPM";
@@ -21,13 +26,13 @@ public class Motor extends Builder {
     public static Motor WrapPart(Builder builder, String partName) { return Wrap(builder.getPart(partName)); }
     public Motor(IBuild build) {
          super(build, CLASSNAME);
-         addConnector(POWER, "Vin").FriendlyName("Power connector");
+         addConnector(Power.Signal, Power.Vin).FriendlyName(Power.Connector);
 
     }
     public Motor(IBuild build, Part part) { super(build, part); }
 
-    public CANSparkLowLevel.MotorType MotorType() { return (CANSparkLowLevel.MotorType)getValue(Motor.motorType); }
-    public Motor MotorType(CANSparkLowLevel.MotorType motorType) {
+    public SparkLowLevel.MotorType MotorType() { return (SparkLowLevel.MotorType)getValue(Motor.motorType); }
+    public Motor MotorType(SparkLowLevel.MotorType motorType) {
         return (Motor)Value(Motor.motorType, motorType);
     }      
     

@@ -13,6 +13,7 @@ import org.team1502.configuration.builders.Part;
 public class SwerveDrive extends Builder {
     public static final String CLASSNAME = "SwerveDrive";
     public static final String goStraightGain = "goStraightGain";
+    public static final String topSpeed = "topSpeed";
     public static Function<IBuild, SwerveDrive> Define = build->new SwerveDrive(build);
     public static SwerveDrive Wrap(Builder builder) { return builder == null ? null : new SwerveDrive(builder.getIBuild(), builder.getPart()); }
     public static SwerveDrive WrapPart(Builder builder) { return WrapPart(builder, CLASSNAME); }
@@ -21,9 +22,9 @@ public class SwerveDrive extends Builder {
     public SwerveDrive(IBuild build) { super(build, CLASSNAME); }
     public SwerveDrive(IBuild build, Part part) { super(build, part); }
 
-    public SwerveDrive SwerveModule(String name, Function<SwerveModule, Builder> fn) {
-        var module = addPiece(SwerveModule.Define, name, SwerveModule.CLASSNAME, fn);
-        module.Value(SwerveModule.location, getKinematic(getPieces().size()));
+    public SwerveDrive SwerveModule(String name, Function<SwerveModuleBuilder, Builder> fn) {
+        var module = addPiece(SwerveModuleBuilder.Define, name, SwerveModuleBuilder.CLASSNAME, fn);
+        module.Value(SwerveModuleBuilder.location, getKinematic(getPieces().size()));
         //module.Value(MotorController.wheelDiameter, Chassis().getWheelDiameter());
         return this;
     }
@@ -42,9 +43,15 @@ public class SwerveDrive extends Builder {
         return this;
     }
 
+    public Double TopSpeed() { return getDouble(topSpeed); }
+    public SwerveDrive TopSpeed(double metersPerSecond) {
+        Value(topSpeed, metersPerSecond);
+        return this;
+    }
+
     /** max speed (m/s) based on reported free-speed */
     public double calculateMaxSpeed() { 
-        return SwerveModule.Wrap(getPiece(0)).calculateMaxSpeed();
+        return SwerveModuleBuilder.Wrap(getPiece(0)).calculateMaxSpeed();
     }
 
     /** max rotation speed (rad/s) based on reported free-speed */
@@ -58,26 +65,26 @@ public class SwerveDrive extends Builder {
     }
     public SwerveDriveKinematics getKinematics() {
         Translation2d[] kinematics = getPieces().stream()
-            .map(module->(Translation2d)module.getValue(SwerveModule.location))
+            .map(module->(Translation2d)module.getValue(SwerveModuleBuilder.location))
             .toArray(Translation2d[]::new);
         return new SwerveDriveKinematics(kinematics);
     }
 
-    public List<SwerveModule> getModules() {
+    public List<SwerveModuleBuilder> getModules() {
         var parts = getPieces();
         return parts.stream()
-            .map(p->SwerveModule.Wrap(p))
+            .map(p->SwerveModuleBuilder.Wrap(p))
             .toList();
     }
-    public SwerveModule SwerveModule(String name) {
-        return SwerveModule.Wrap(getPieces().stream()
+    public SwerveModuleBuilder SwerveModule(String name) {
+        return SwerveModuleBuilder.Wrap(getPieces().stream()
             .filter(p->p.Name() == name)
             .findFirst()
             .get());
     }
     /** NOTE: NOT an index! number is e.g., 1 through 4 */
-    public SwerveModule SwerveModule(int number) {
-        return SwerveModule.Wrap(getPieces().get(number - 1));
+    public SwerveModuleBuilder SwerveModule(int number) {
+        return SwerveModuleBuilder.Wrap(getPieces().get(number - 1));
     }
 
 }

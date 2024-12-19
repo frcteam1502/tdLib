@@ -10,7 +10,7 @@ import org.team1502.configuration.builders.RoboRIO;
 import org.team1502.configuration.builders.motors.Motor;
 import org.team1502.configuration.builders.motors.MotorController;
 import org.team1502.configuration.builders.motors.SwerveDrive;
-import org.team1502.configuration.builders.motors.SwerveModule;
+import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
 import org.team1502.configuration.builders.power.PowerDistributionModule;
 import org.team1502.configuration.builders.sensors.GyroSensor;
 import org.team1502.configuration.builders.sensors.IMU;
@@ -39,7 +39,7 @@ public class PartFactory {
     }
 
     public PartBuilder<? extends Builder> getTemplate(String partName) {
-        var template = _builderMap.get(partName);
+        PartBuilder<?> template = _builderMap.get(partName);
         return template != null 
             ? template
             : _parent != null 
@@ -48,7 +48,7 @@ public class PartFactory {
     }
 
     public <T extends Builder> PartBuilder<T> getTemplate(String partName, Function<IBuild, T> createFunction, Function<T, Builder> buildFunction) {
-        var template = (PartBuilder<T>)getTemplate(partName);
+        PartBuilder<T> template = (PartBuilder<T>)getTemplate(partName);
         if (template != null) {
             return template.with(buildFunction);
         } else {
@@ -78,8 +78,8 @@ public class PartFactory {
     public PartFactory SwerveDrive(Function<SwerveDrive, Builder> fn) {
         return addTemplate(SwerveDrive.CLASSNAME, SwerveDrive.Define, fn);
     }
-    public PartFactory SwerveModule(Function<SwerveModule, Builder> fn) {
-        return addTemplate(SwerveModule.CLASSNAME,  SwerveModule.Define, fn);
+    public PartFactory SwerveModule(Function<SwerveModuleBuilder, Builder> fn) {
+        return addTemplate(SwerveModuleBuilder.CLASSNAME,  SwerveModuleBuilder.Define, fn);
     }
 
     // Basic Parts
