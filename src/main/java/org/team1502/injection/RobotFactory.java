@@ -30,8 +30,8 @@ public class RobotFactory {
     }
 
     public static RobotFactory Create(Class<?> robotClass, RobotConfiguration config) {
-        var factory = new RobotFactory(config);
         RobotFactory.robotClass = robotClass;
+        var factory = new RobotFactory(config);
         factory.start();
         return factory;        
     }
@@ -50,7 +50,7 @@ public class RobotFactory {
     private List<SubsystemFactory> subsystemFactories;
     private List<CommandFactory> commandFactories;
     private RobotConfiguration configuration;
-    private final File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+    private final File jarFile = new File(robotClass.getProtectionDomain().getCodeSource().getLocation().getPath());
 
     private void start() {
         System.out.println("FACTORY: Start");
