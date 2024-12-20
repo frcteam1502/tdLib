@@ -10,11 +10,13 @@ import org.team1502.configuration.builders.motors.MotorController;
 import org.team1502.configuration.builders.motors.SwerveDrive;
 import org.team1502.hardware.SwerveModule;
 import org.team1502.hardware.SwerveModules;
+import org.team1502.injection.RobotFactory;
 import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
 import org.team1502.configuration.factory.Evaluator;
 import org.team1502.configuration.factory.FactoryTestsBase;
 import org.team1502.configuration.factory.PartFactory;
 import org.team1502.configuration.factory.RobotConfiguration;
+import frc.robot.subsystems.DriveSubsystem;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -161,6 +163,43 @@ public class importTests {
         double maxSpeed = swerveDrive.calculateMaxSpeed();
         //SwerveDrivePoseEstimator odometry = swerveDrive.getKinematics();
         AssertMK4iL3(swerveModules);
+    }
+
+    @Test
+    public void startSwerveDriveTest() {
+
+        var robotConfiguration = RobotConfiguration.Create("swerveTest1", fn -> fn
+            .Parts(inventory -> {
+                Motors(inventory);
+                Mk4iL3(inventory);
+                return inventory;
+            }
+        ));
+        robotConfiguration.Build(builder->builder
+            .SwerveDrive(sd->sd
+                .Chassis(c -> c
+                    .Square(19.75)
+                    .Frame(25.25)
+                    .WheelDiameter(4.0)
+                )
+                .SwerveModule("Module#1", sm->sm
+                    .CanNumber(4)
+                )
+                .SwerveModule("Module#2", sm->sm
+                    .CanNumber(6)
+                )
+                .SwerveModule("Module#3", sm->sm
+                    .CanNumber(8)
+                )
+                .SwerveModule("Module#4", sm->sm
+                    .CanNumber(10)
+                )
+                .TopSpeed(4.6)
+            )
+        );
+
+        RobotFactory factory = RobotFactory.Create(DriveSubsystem.class, robotConfiguration);
+
     }
 
     public static void Motors(PartFactory inventory) {inventory

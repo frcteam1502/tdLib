@@ -57,7 +57,11 @@ public class RobotPart {
         defaultCommand = partClass.getDeclaredAnnotation(defaultCommandAnnotation);
         disabled = subsystemInfo == null ? false : subsystemInfo.disabled();
         ctor = getConstructor(partClass);
-        dependencies = ctor.getParameterTypes();
+        if (ctor == null) {
+            System.out.println(name + " doesn't have constructor");
+        } else {
+            dependencies = ctor.getParameterTypes();
+        }
     }
 
     public <T> RobotPart(T robotPart) {

@@ -245,6 +245,7 @@ public class RobotFactory {
 
     private void findClassesIn(String folder, ClassLoader loader, ArrayList<String> classes) throws IOException {
         InputStream stream = loader.getResourceAsStream(folder);
+        if (stream == null) return;
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         while (reader.ready()) {
             String line = reader.readLine();
