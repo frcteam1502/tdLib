@@ -134,7 +134,7 @@ public class RobotConfiguration {
     }
 
     public Chassis Chassis() { return Values().SwerveDrive().Chassis(); }
-    public SwerveDrive SwerveDrive() { return Values().SwerveDrive(); }
+    public SwerveDriveBuilder SwerveDrive() { return Values().SwerveDrive(); }
     public SwerveModuleBuilder SwerveModule(String name) { return Values().SwerveDrive().SwerveModule(name); }
     public PowerDistributionModule MPM(String name) { return Values().MPM(name); }
     public PowerDistributionModule PDH() { return Values().PDH(); }

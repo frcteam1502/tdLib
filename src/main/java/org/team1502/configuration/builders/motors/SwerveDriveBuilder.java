@@ -9,28 +9,33 @@ import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.Chassis;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
+import org.team1502.hardware.SwerveDrive;
+import org.team1502.hardware.SwerveModules;
 
-public class SwerveDrive extends Builder {
+public class SwerveDriveBuilder extends Builder {
     public static final String CLASSNAME = "SwerveDrive";
     public static final String goStraightGain = "goStraightGain";
     public static final String topSpeed = "topSpeed";
-    public static Function<IBuild, SwerveDrive> Define = build->new SwerveDrive(build);
-    public static SwerveDrive Wrap(Builder builder) { return builder == null ? null : new SwerveDrive(builder.getIBuild(), builder.getPart()); }
-    public static SwerveDrive WrapPart(Builder builder) { return WrapPart(builder, CLASSNAME); }
-    public static SwerveDrive WrapPart(Builder builder, String partName) { return Wrap(builder.getPart(partName)); }
+    public static Function<IBuild, SwerveDriveBuilder> Define = build->new SwerveDriveBuilder(build);
+    public static SwerveDriveBuilder Wrap(Builder builder) { return builder == null ? null : new SwerveDriveBuilder(builder.getIBuild(), builder.getPart()); }
+    public static SwerveDriveBuilder WrapPart(Builder builder) { return WrapPart(builder, CLASSNAME); }
+    public static SwerveDriveBuilder WrapPart(Builder builder, String partName) { return Wrap(builder.getPart(partName)); }
 
-    public SwerveDrive(IBuild build) { super(build, CLASSNAME); }
-    public SwerveDrive(IBuild build, Part part) { super(build, part); }
+    public SwerveDriveBuilder(IBuild build) { super(build, CLASSNAME); }
+    /** PartFactory doesn't need to see this one */
+    private SwerveDriveBuilder(IBuild build, Part part) { super(build, part); }
 
-    public SwerveDrive SwerveModule(String name, Function<SwerveModuleBuilder, Builder> fn) {
+    public SwerveDriveBuilder SwerveModule(String name, Function<SwerveModuleBuilder, Builder> fn) {
         var module = addPiece(SwerveModuleBuilder.Define, name, SwerveModuleBuilder.CLASSNAME, fn);
         module.Value(SwerveModuleBuilder.location, getKinematic(getPieces().size()));
         //module.Value(MotorController.wheelDiameter, Chassis().getWheelDiameter());
         return this;
     }
 
+    public SwerveDrive buildSwerveDrive() { return new SwerveDrive(this); }
+    
     public Chassis Chassis() { return Chassis.WrapPart(this); }
-    public SwerveDrive Chassis(Function<Chassis, Builder> fn) {
+    public SwerveDriveBuilder Chassis(Function<Chassis, Builder> fn) {
         var chassis = addPart(Chassis.Define, fn);
         Value(MotorController.wheelDiameter, chassis.getWheelDiameter());
         return this;
@@ -38,13 +43,13 @@ public class SwerveDrive extends Builder {
 
     /** How fast to track target angle when not turning */
     public Double GoStraightGain() { return getDouble(goStraightGain); }
-    public SwerveDrive GoStraightGain(double gain) {
+    public SwerveDriveBuilder GoStraightGain(double gain) {
         Value(goStraightGain, gain);
         return this;
     }
 
     public Double TopSpeed() { return getDouble(topSpeed); }
-    public SwerveDrive TopSpeed(double metersPerSecond) {
+    public SwerveDriveBuilder TopSpeed(double metersPerSecond) {
         Value(topSpeed, metersPerSecond);
         return this;
     }
@@ -76,6 +81,9 @@ public class SwerveDrive extends Builder {
             .map(p->SwerveModuleBuilder.Wrap(p))
             .toList();
     }
+    
+    public SwerveModules getSwerveModules() { return new SwerveModules(getModules()); }
+
     public SwerveModuleBuilder SwerveModule(String name) {
         return SwerveModuleBuilder.Wrap(getPieces().stream()
             .filter(p->p.Name() == name)

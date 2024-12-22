@@ -223,8 +223,8 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
         return installBuilder(name, partName, MotorController.Define(Manufacturer.REVRobotics), fn);
     }    
 
-    public RobotBuilder SwerveDrive(Function<SwerveDrive, Builder> fn) {        
-        return installBuilder(SwerveDrive.CLASSNAME, SwerveDrive.CLASSNAME, SwerveDrive.Define, fn);
+    public RobotBuilder SwerveDrive(Function<SwerveDriveBuilder, Builder> fn) {        
+        return installBuilder(SwerveDriveBuilder.CLASSNAME, SwerveDriveBuilder.CLASSNAME, SwerveDriveBuilder.Define, fn);
     }    
     public RobotBuilder SwerveModule(String name, Function<SwerveModuleBuilder, Builder> fn) {        
         return installBuilder(name, SwerveModuleBuilder.CLASSNAME, SwerveModuleBuilder.Define, fn);

@@ -9,7 +9,7 @@ import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.RoboRIO;
 import org.team1502.configuration.builders.motors.Motor;
 import org.team1502.configuration.builders.motors.MotorController;
-import org.team1502.configuration.builders.motors.SwerveDrive;
+import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
 import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
 import org.team1502.configuration.builders.power.PowerDistributionModule;
 import org.team1502.configuration.builders.sensors.GyroSensor;
@@ -75,8 +75,8 @@ public class PartFactory {
         return addTemplate(name,  GyroSensor.Define(manufacturer), fn);
     }
 
-    public PartFactory SwerveDrive(Function<SwerveDrive, Builder> fn) {
-        return addTemplate(SwerveDrive.CLASSNAME, SwerveDrive.Define, fn);
+    public PartFactory SwerveDrive(Function<SwerveDriveBuilder, Builder> fn) {
+        return addTemplate(SwerveDriveBuilder.CLASSNAME, SwerveDriveBuilder.Define, fn);
     }
     public PartFactory SwerveModule(Function<SwerveModuleBuilder, Builder> fn) {
         return addTemplate(SwerveModuleBuilder.CLASSNAME,  SwerveModuleBuilder.Define, fn);

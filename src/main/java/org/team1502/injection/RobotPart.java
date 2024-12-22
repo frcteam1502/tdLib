@@ -64,9 +64,10 @@ public class RobotPart {
         }
     }
 
-    public <T> RobotPart(T robotPart) {
+    public <T> RobotPart(T robotPart) { this(robotPart, robotPart.getClass()); }
+    public <T> RobotPart(T robotPart, Class<?> klass) {
         part = robotPart;
-        partClass = part.getClass();
+        partClass = klass;
         simpleName = partClass.getSimpleName();
         name = partClass.getName(); // simpleName.substring(simpleName.lastIndexOf('.') + 1);     
         subsystemInfo = partClass.getDeclaredAnnotation(subsystemAnnotation);

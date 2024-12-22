@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.team1502.configuration.CAN.Manufacturer;
 import org.team1502.configuration.builders.motors.Motor;
 import org.team1502.configuration.builders.motors.MotorController;
-import org.team1502.configuration.builders.motors.SwerveDrive;
+import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
 import org.team1502.hardware.SwerveModule;
 import org.team1502.hardware.SwerveModules;
 import org.team1502.injection.RobotFactory;
@@ -157,7 +157,7 @@ public class importTests {
 
         Evaluator evaluator = robotConfiguration.Values();
         
-        SwerveDrive swerveDrive = evaluator.SwerveDrive();
+        SwerveDriveBuilder swerveDrive = evaluator.SwerveDrive();
         SwerveModules swerveModules = new SwerveModules(swerveDrive);
         SwerveDriveKinematics kinematics = swerveDrive.getKinematics();
         double maxSpeed = swerveDrive.calculateMaxSpeed();
@@ -176,25 +176,30 @@ public class importTests {
             }
         ));
         robotConfiguration.Build(builder->builder
-            .SwerveDrive(sd->sd
-                .Chassis(c -> c
-                    .Square(19.75)
-                    .Frame(25.25)
-                    .WheelDiameter(4.0)
+            .Subsystem(DriveSubsystem.class, sys->sys
+                .Pigeon2(g->g
+                    .CanNumber(14))
+
+                .SwerveDrive(sd->sd
+                    .Chassis(c -> c
+                        .Square(19.75)
+                        .Frame(25.25)
+                        .WheelDiameter(4.0)
+                    )
+                    .SwerveModule("Module#1", sm->sm
+                        .CanNumber(4)
+                    )
+                    .SwerveModule("Module#2", sm->sm
+                        .CanNumber(6)
+                    )
+                    .SwerveModule("Module#3", sm->sm
+                        .CanNumber(8)
+                    )
+                    .SwerveModule("Module#4", sm->sm
+                        .CanNumber(10)
+                    )
+                    .TopSpeed(4.6)
                 )
-                .SwerveModule("Module#1", sm->sm
-                    .CanNumber(4)
-                )
-                .SwerveModule("Module#2", sm->sm
-                    .CanNumber(6)
-                )
-                .SwerveModule("Module#3", sm->sm
-                    .CanNumber(8)
-                )
-                .SwerveModule("Module#4", sm->sm
-                    .CanNumber(10)
-                )
-                .TopSpeed(4.6)
             )
         );
 

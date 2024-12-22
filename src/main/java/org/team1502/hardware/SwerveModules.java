@@ -1,6 +1,7 @@
 package org.team1502.hardware;
 
 import java.util.Arrays;
+import java.util.List;
 
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -9,20 +10,21 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.team1502.configuration.builders.motors.SwerveDrive;
+import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
+import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
 
 public class SwerveModules implements Sendable {
     private SwerveModule[] _modules;
     private String[] _moduleNames;
   
-    public SwerveModules(SwerveDrive swerveDrive)
+    public SwerveModules(SwerveDriveBuilder swerveDrive) { this(swerveDrive.getModules()); }
+    public SwerveModules(List<SwerveModuleBuilder> swerveModules)
     {
-        var modules = swerveDrive.getModules();
-        _modules = modules.stream()
+        _modules = swerveModules.stream()
                     .map(m->new SwerveModule(m))
                     .toArray(SwerveModule[]::new);
 
-        _moduleNames = modules.stream()
+        _moduleNames = swerveModules.stream()
                     .map(m->m.FriendlyName())
                     .toArray(String[]::new);
     }

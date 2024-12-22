@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.team1502.configuration.annotations.*;
+import org.team1502.configuration.builders.IBuild;
+import org.team1502.configuration.factory.RobotBuilder;
 import org.team1502.configuration.factory.RobotConfiguration;
 
 public class RobotFactory {
@@ -39,7 +41,7 @@ public class RobotFactory {
     private RobotFactory() {}
     
     private RobotFactory(RobotConfiguration config) {
-        configuration = config;
+        this.configuration = config;
     }
     public RobotConfiguration getRobotConfiguration() { return configuration; }
 
@@ -115,9 +117,19 @@ public class RobotFactory {
     }
     
     int systemSize;
+    RobotBuilder robotBuilder;
     private void build() {
         systemSize = parts.size(); // just iterate over the subsytems
         addPart(new RobotPart(configuration));
+
+        // a bare builder may need a IBuild-er for ctor, should config do that?
+        // ?? side-effects?
+        // ?? does this need to be scoped for Sub-RobotConfigurations
+        configuration.Build(rb -> robotBuilder = rb);
+        Class<?>[] interfaces = robotBuilder.getClass().getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            addPart(new RobotPart(robotBuilder, interfaces[i].getClass()));
+        }
         buildParts();
     }
 

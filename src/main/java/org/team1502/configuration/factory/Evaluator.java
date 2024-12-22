@@ -149,10 +149,10 @@ public class Evaluator {
         return getValue(PowerDistributionModule.PDH, b->PowerDistributionModule.Wrap(b), p->p);
     }
 
-    public SwerveDrive SwerveDrive() {return SwerveDrive(d->d); }
+    public SwerveDriveBuilder SwerveDrive() {return SwerveDrive(d->d); }
 
-    public <T extends Object> T SwerveDrive(Function<SwerveDrive, T> fn) {
-        return (T)getValue(SwerveDrive.CLASSNAME, b->SwerveDrive.Wrap(b), fn);   
+    public <T extends Object> T SwerveDrive(Function<SwerveDriveBuilder, T> fn) {
+        return (T)getValue(SwerveDriveBuilder.CLASSNAME, b->SwerveDriveBuilder.Wrap(b), fn);   
     }
 
 }
