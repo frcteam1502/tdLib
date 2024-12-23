@@ -134,8 +134,6 @@ public class importTests {
             .SwerveDrive(sd->sd
                 .Chassis(c -> c
                     .Square(19.75)
-                    .Frame(25.25)
-                    .WheelDiameter(4.0)
                 )
                 .SwerveModule("Module#1", sm->sm
                     .CanNumber(4)
@@ -183,8 +181,6 @@ public class importTests {
                 .SwerveDrive(sd->sd
                     .Chassis(c -> c
                         .Square(19.75)
-                        .Frame(25.25)
-                        .WheelDiameter(4.0)
                     )
                     .SwerveModule("Module#1", sm->sm
                         .CanNumber(4)
@@ -198,12 +194,13 @@ public class importTests {
                     .SwerveModule("Module#4", sm->sm
                         .CanNumber(10)
                     )
-                    .TopSpeed(4.6)
                 )
             )
         );
 
         RobotFactory factory = RobotFactory.Create(DriveSubsystem.class, robotConfiguration);
+        DriveSubsystem driveSubsystem = factory.getInstance(DriveSubsystem.class);
+        driveSubsystem.drive(1.0, 0, 0, false);
 
     }
 

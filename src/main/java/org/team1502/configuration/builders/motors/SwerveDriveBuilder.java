@@ -1,8 +1,9 @@
 package org.team1502.configuration.builders.motors;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import org.team1502.configuration.builders.Builder;
@@ -32,12 +33,12 @@ public class SwerveDriveBuilder extends Builder {
         return this;
     }
 
-    public SwerveDrive buildSwerveDrive() { return new SwerveDrive(this); }
+    public SwerveDrive buildSwerveDrive(Supplier<Rotation2d> gyroAngle) { return new SwerveDrive(this, gyroAngle); }
     
     public Chassis Chassis() { return Chassis.WrapPart(this); }
     public SwerveDriveBuilder Chassis(Function<Chassis, Builder> fn) {
         var chassis = addPart(Chassis.Define, fn);
-        Value(MotorController.wheelDiameter, chassis.getWheelDiameter());
+        //Value(MotorController.wheelDiameter, chassis.getWheelDiameter());
         return this;
     }
 

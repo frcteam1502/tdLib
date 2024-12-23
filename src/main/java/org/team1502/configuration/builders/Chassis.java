@@ -15,9 +15,9 @@ public class Chassis extends Builder {
   /** Wheel Base Radius (in) */
   private static final String driveBaseRadius = "driveBaseRadius";
 
-  /** Wheel Diameter (in) */
+  /** Wheel Diameter (in) *
   private static final String wheelDiameter = "wheelDiameter";
-
+  */
   public static Function<IBuild, Chassis> Define = build->new Chassis(build);
   public static Chassis Wrap(Builder builder) { return builder == null ? null : new Chassis(builder.getIBuild(), builder.getPart()); }
   public static Chassis WrapPart(Builder builder) { return WrapPart(builder, NAME); }
@@ -45,16 +45,16 @@ public class Chassis extends Builder {
       return this;
   }
 
-  /** Wheel Diameter (m) */
+  /** Wheel Diameter (m) *
   public double getWheelDiameter() { return getMeters(wheelDiameter); }
-  /** Wheel Diameter (in)  */
+  /** Wheel Diameter (in)  *
   public double WheelDiameter() { return getDouble(wheelDiameter); }
-  /** Wheel Diameter */
+  /** Wheel Diameter *
   public Chassis WheelDiameter(double inches) {
     Value(wheelDiameter, inches);
     return this;
   }
-
+  */
   /** Radius The radius of the drive base in meters. For swerve drive, this is the distance from the center of the robot to the furthest module. For mecanum, this is the drive base width / 2 */
   public double getDriveBaseRadius() { return getMeters(driveBaseRadius); }
   /** radius of drive base in inches */
