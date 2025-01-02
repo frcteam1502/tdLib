@@ -28,6 +28,7 @@ public class DriveSubsystem implements Subsystem {
 
     public DriveSubsystem(RobotConfiguration configuration) {
         gyro = configuration.Pigeon2().buildPigeon2();
+        var statusCode  = gyro.setYaw(0); // whichever way we are pointing is 0 (+X direction)
         gyroYaw = gyro.getYaw().asSupplier();
         gyroRotation2d = ()->new Rotation2d(gyroYaw.get());
 
@@ -36,7 +37,7 @@ public class DriveSubsystem implements Subsystem {
 
     @Override
     public void periodic() {
-        swerveDrive.updateOdometry();
+        swerveDrive.periodic();
     }
 
     public void swerveDrive(double forwardUnitVelocity, double leftUnitVelocity, double ccwUnitVelocity) {

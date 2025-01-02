@@ -50,6 +50,10 @@ public class swerveTests {
         SwerveModule sm = new SwerveModule(smb1);
 
         AssertMK4iL3(sm);
+
+        sm.driveMotor.close();
+        sm.turningMotor.close();
+        sm.absEncoder.close();
     }
 
     @Test
@@ -88,11 +92,19 @@ public class swerveTests {
         Evaluator evaluator = robotConfiguration.Values();
         
         SwerveDriveBuilder swerveDrive = evaluator.SwerveDrive();
-        SwerveModules swerveModules = new SwerveModules(swerveDrive);
+        SwerveModules modules = new SwerveModules(swerveDrive);
         SwerveDriveKinematics kinematics = swerveDrive.getKinematics();
         double maxSpeed = swerveDrive.calculateMaxSpeed();
         //SwerveDrivePoseEstimator odometry = swerveDrive.getKinematics();
-        AssertMK4iL3(swerveModules);
+        AssertMK4iL3(modules);
+
+        SwerveModule[] swerveModules = modules.m_modules;
+
+        for (int i=0; i<4; i++) {
+            swerveModules[i].driveMotor.close();
+            swerveModules[i].turningMotor.close();
+            swerveModules[i].absEncoder.close();
+        }        
     }
 
     @Test

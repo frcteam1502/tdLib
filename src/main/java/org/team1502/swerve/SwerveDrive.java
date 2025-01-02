@@ -44,6 +44,10 @@ public class SwerveDrive {
         this.maxRotationalSpeed = maxFreeRotationalSpeed;
     }
 
+    public void periodic() {
+        updateOdometry();
+    }
+    
     /** Field-Relative Controller input */
     public void swerveDrive(double forwardUnitVelocity, double leftSpeed, double ccwUnitVelocity) {
         ChassisSpeeds robotRelativeSpeeds = new ChassisSpeeds(
