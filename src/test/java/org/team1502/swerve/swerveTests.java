@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class swerveTests {
@@ -146,6 +147,7 @@ public class swerveTests {
     
         RobotFactory factory = RobotFactory.Create(DriveSubsystem.class, robotConfiguration);
         DriveSubsystem driveSubsystem = factory.getInstance(DriveSubsystem.class);
+        DriveCommands driveCommands = factory.getInstance(DriveCommands.class);
         SwerveModule[] swerveModules = driveSubsystem.swerveDrive.swerveModules.m_modules;
         driveSubsystem.gyroYaw = ()->getAngle();
         driveSubsystem.swerveDrive.maxSpeed = 4.0;
