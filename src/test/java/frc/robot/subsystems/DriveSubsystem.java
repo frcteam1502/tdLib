@@ -11,20 +11,20 @@ import java.util.function.*;
 
 import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
 import org.team1502.configuration.factory.RobotConfiguration;
-import org.team1502.hardware.SwerveDrive;
-import org.team1502.hardware.SwerveModules;
+import org.team1502.swerve.SwerveDrive;
+import org.team1502.swerve.SwerveModules;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 public class DriveSubsystem implements Subsystem {
     final Pigeon2 gyro;
     /** generic Angle in degrees */
-    final Supplier<Angle> gyroYaw;
+    public /*final*/ Supplier<Angle> gyroYaw;
     /** generic Rotation2d in radians */
-    final Supplier<Rotation2d> gyroRotation2d;
+    public /*final*/ Supplier<Rotation2d> gyroRotation2d;
 
-    final SwerveDrive swerveDrive;
-    ChassisSpeeds speedCommands = new ChassisSpeeds(); // re-use existing object
+    public final SwerveDrive swerveDrive;
+    //ChassisSpeeds speedCommands = new ChassisSpeeds(); // re-use existing object
 
     public DriveSubsystem(RobotConfiguration configuration) {
         gyro = configuration.Pigeon2().buildPigeon2();
@@ -32,7 +32,6 @@ public class DriveSubsystem implements Subsystem {
         gyroRotation2d = ()->new Rotation2d(gyroYaw.get());
 
         swerveDrive = configuration.SwerveDrive().buildSwerveDrive(gyroRotation2d);
-
     }
 
     @Override
@@ -40,14 +39,16 @@ public class DriveSubsystem implements Subsystem {
         swerveDrive.updateOdometry();
     }
 
-    public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
-        speedCommands.vxMetersPerSecond = xSpeed;
-        speedCommands.vyMetersPerSecond = ySpeed; 
-        speedCommands.omegaRadiansPerSecond = rotationSpeed;
+    public void swerveDrive(double forwardUnitVelocity, double leftUnitVelocity, double ccwUnitVelocity) {
+        swerveDrive.swerveDrive(forwardUnitVelocity, leftUnitVelocity, ccwUnitVelocity);
+    }
+
+    public void drive(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond, boolean fieldRelative) {
+        ChassisSpeeds speedCommands = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
         if (fieldRelative){
             speedCommands.toRobotRelativeSpeeds(gyroRotation2d.get());
         }
-        this.swerveDrive.driveRobotRelative(speedCommands);
+        driveRobotRelative(speedCommands);
     }
 
     public void driveRobotRelative(ChassisSpeeds speedCommands)

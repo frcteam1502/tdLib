@@ -1,4 +1,4 @@
-package org.team1502.hardware;
+package org.team1502.swerve;
 
 import java.util.function.*;
 
@@ -14,12 +14,16 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 public class SwerveDrive {
     final SwerveDriveKinematics kinematics;
     final SwerveDrivePoseEstimator odometry;
-    final Supplier<Rotation2d> gyroAngle;
     final SwerveModules swerveModules;
+    final Supplier<Rotation2d> gyroAngle;
+    
+    /** top theoretical speeds */
     final double maxFreeSpeed;
-    final double maxRotationalSpeed;
+    final double maxFreeRotationalSpeed;
+
     //** adjustable desaturate speed */
     public double maxSpeed;
+    public double maxRotationalSpeed;
 
     Pose2d pose = new Pose2d();
 
@@ -27,10 +31,27 @@ public class SwerveDrive {
         this.gyroAngle = fnGyroAngle;
         this.kinematics = builder.getKinematics();
         this.swerveModules = builder.getSwerveModules();
+        this.odometry = new SwerveDrivePoseEstimator(
+            this.kinematics, 
+            this.gyroAngle.get(), 
+            this.swerveModules.getModulePositions(), 
+            this.pose);
+        
         this.maxFreeSpeed = builder.calculateMaxSpeed();
-        this.maxSpeed = builder.TopSpeed();
-        this.maxRotationalSpeed = builder.calculateMaxRotationSpeed();
-        this.odometry = new SwerveDrivePoseEstimator(this.kinematics, this.gyroAngle.get(), this.swerveModules.getModulePositions(), this.pose);
+        this.maxFreeRotationalSpeed = builder.calculateMaxRotationSpeed();
+        
+        this.maxSpeed = maxFreeSpeed;
+        this.maxRotationalSpeed = maxFreeRotationalSpeed;
+    }
+
+    /** Field-Relative Controller input */
+    public void swerveDrive(double forwardUnitVelocity, double leftSpeed, double ccwUnitVelocity) {
+        ChassisSpeeds robotRelativeSpeeds = new ChassisSpeeds(
+            forwardUnitVelocity * maxSpeed,
+            leftSpeed * maxSpeed,
+            ccwUnitVelocity * maxRotationalSpeed);
+        robotRelativeSpeeds.toRobotRelativeSpeeds(gyroAngle.get());
+        driveRobotRelative(robotRelativeSpeeds);
     }
 
     /** Use ChassisSpeeds to set swerve modules */

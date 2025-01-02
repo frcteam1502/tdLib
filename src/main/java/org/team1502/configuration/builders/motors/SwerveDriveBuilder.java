@@ -10,8 +10,8 @@ import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.Chassis;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
-import org.team1502.hardware.SwerveDrive;
-import org.team1502.hardware.SwerveModules;
+import org.team1502.swerve.SwerveDrive;
+import org.team1502.swerve.SwerveModules;
 
 public class SwerveDriveBuilder extends Builder {
     public static final String CLASSNAME = "SwerveDrive";

@@ -1,4 +1,4 @@
-package org.team1502.hardware;
+package org.team1502.swerve;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,42 +14,42 @@ import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
 import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
 
 public class SwerveModules implements Sendable {
-    private SwerveModule[] _modules;
-    private String[] _moduleNames;
+    SwerveModule[] m_modules;
+    String[] m_moduleNames;
   
     public SwerveModules(SwerveDriveBuilder swerveDrive) { this(swerveDrive.getModules()); }
     public SwerveModules(List<SwerveModuleBuilder> swerveModules)
     {
-        _modules = swerveModules.stream()
+        m_modules = swerveModules.stream()
                     .map(m->new SwerveModule(m))
                     .toArray(SwerveModule[]::new);
 
-        _moduleNames = swerveModules.stream()
+        m_moduleNames = swerveModules.stream()
                     .map(m->m.FriendlyName())
                     .toArray(String[]::new);
     }
 
     public void setDesiredState(SwerveModuleState[] swerveModuleStates) {
         for(int i = 0; i < swerveModuleStates.length; i++) {
-            _modules[i].setDesiredState(swerveModuleStates[i]);
+            m_modules[i].setDesiredState(swerveModuleStates[i]);
         }
     }
 
     public SwerveModuleState[] getModuleStates() {
-        return Arrays.stream(_modules)
+        return Arrays.stream(m_modules)
             .map(m->m.getState())
             .toArray(SwerveModuleState[]::new);
     }
 
     public SwerveModulePosition[] getModulePositions() {
-        return Arrays.stream(_modules)
+        return Arrays.stream(m_modules)
             .map(m->m.getPosition())
             .toArray(SwerveModulePosition[]::new);
     }
 
     public void resetModules() {
-        for(int i = 0; i < _modules.length; i++) {
-            _modules[i].zeroModule();
+        for(int i = 0; i < m_modules.length; i++) {
+            m_modules[i].zeroModule();
         }
     }
 
@@ -57,15 +57,15 @@ public class SwerveModules implements Sendable {
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("SwerveModules");
 
-        for(int i = 0; i < _modules.length; i++) {
-            SendableRegistry.addLW(_modules[i], "SwerveModules", _moduleNames[i] );
+        for(int i = 0; i < m_modules.length; i++) {
+            SendableRegistry.addLW(m_modules[i], "SwerveModules", m_moduleNames[i] );
         }
     }
     
     public void send() {
         SmartDashboard.putData(this);
-        for(int i = 0; i < _modules.length; i++) {
-            SmartDashboard.putData(_modules[i]);
+        for(int i = 0; i < m_modules.length; i++) {
+            SmartDashboard.putData(m_modules[i]);
         }
     }
 }

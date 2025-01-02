@@ -1,4 +1,4 @@
-package org.team1502.hardware;
+package org.team1502.swerve;
 
 import org.team1502.configuration.builders.motors.ISwerveModule;
 import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
@@ -18,16 +18,17 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class SwerveModule implements ISwerveModule, Sendable {
-    private final SparkMax driveMotor;
-    private final SparkMax turningMotor;
-    private final RelativeEncoder driveEncoder;
-    private final CANcoder absEncoder;
-    private final SparkClosedLoopController drivePIDController;
-    private final PIDController turningPIDController;
+    final SparkMax driveMotor;
+    final SparkMax turningMotor;
+    final RelativeEncoder driveEncoder;
+    final CANcoder absEncoder;
+    final SparkClosedLoopController drivePIDController;
+    final PIDController turningPIDController;
     public final double maxSpeed;
 
-    private double commandedSpeed;
-    private double commandedAngle;
+    double commandedSpeed;
+    double commandedAngle;
+    double desiredSpeedVoltage;
 
     public SwerveModule(SwerveModuleBuilder config) {
         config.setSwerveModuleInstance(this); // for logging
@@ -74,6 +75,7 @@ public class SwerveModule implements ISwerveModule, Sendable {
         this.commandedSpeed = desiredState.speedMetersPerSecond;
         this.commandedAngle = desiredState.angle.getDegrees();
 
+        // TODO: should this decision really be done here?
         if (Math.abs(desiredState.speedMetersPerSecond) < .2) {
             driveMotor.set(0);
             turningMotor.set(0);
