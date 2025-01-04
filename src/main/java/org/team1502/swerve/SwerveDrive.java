@@ -50,11 +50,11 @@ public class SwerveDrive {
     
     /** Field-Relative Controller input */
     public void swerveDrive(double forwardUnitVelocity, double leftSpeed, double ccwUnitVelocity) {
-        ChassisSpeeds robotRelativeSpeeds = new ChassisSpeeds(
+        ChassisSpeeds robotRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             forwardUnitVelocity * maxSpeed,
             leftSpeed * maxSpeed,
-            ccwUnitVelocity * maxRotationalSpeed);
-        robotRelativeSpeeds.toRobotRelativeSpeeds(gyroAngle.get());
+            ccwUnitVelocity * maxRotationalSpeed, 
+            gyroAngle.get());
         driveRobotRelative(robotRelativeSpeeds);
     }
 

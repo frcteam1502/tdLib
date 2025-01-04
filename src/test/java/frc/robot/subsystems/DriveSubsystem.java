@@ -45,10 +45,10 @@ public class DriveSubsystem implements Subsystem {
     }
 
     public void drive(double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond, boolean fieldRelative) {
-        ChassisSpeeds speedCommands = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
-        if (fieldRelative){
-            speedCommands.toRobotRelativeSpeeds(gyroRotation2d.get());
-        }
+        ChassisSpeeds speedCommands = fieldRelative
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond, gyroRotation2d.get())
+            : new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+        
         driveRobotRelative(speedCommands);
     }
 
