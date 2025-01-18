@@ -48,3 +48,18 @@ public class GyroSensor extends Builder {
         return this;
     }
 }
+
+/*
+
+ On startup: Yaw = -90deg (TODO: confirm)
+
+  Y
+  |
+  |
+ ___
+| Z | ____ X
+:___:
+
+
+
+ */
