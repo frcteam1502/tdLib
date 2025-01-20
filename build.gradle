@@ -1,6 +1,7 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2025.1.1"
+    id "edu.wpi.first.GradleRIO" version "2025.2.1"
+    id 'maven-publish'
 }
 
 java {
@@ -8,8 +9,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-group = 'com.github.frcteam1502'
+group = 'org.team1502'
+version = 'v2025.1.0'
 
+repositories {
+    mavenCentral()
+}
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
@@ -54,4 +59,19 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 artifacts {
   archives sourcesJar
+}
+
+publishing {
+    publications {
+        customLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'sampleRepo'
+            url = layout.buildDirectory.dir("repo")
+        }
+    }
 }
