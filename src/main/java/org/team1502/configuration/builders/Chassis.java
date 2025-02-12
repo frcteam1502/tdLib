@@ -5,7 +5,7 @@ import java.util.function.Function;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class Chassis extends Builder {
-  private static final String NAME = "Chassis";
+  public static final String NAME = "Chassis";
   private static final String chassisLayout = "chassisLayout";
 
   /** Wheel Base Width (in) */
