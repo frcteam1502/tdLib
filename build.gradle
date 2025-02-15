@@ -55,3 +55,9 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 artifacts {
   archives sourcesJar
 }
+
+apply from: 'publish.gradle'
+
+wrapper {
+  gradleVersion '8.11'
+}
