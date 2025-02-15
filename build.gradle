@@ -9,7 +9,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-group = 'org.team1502'
+group = 'org.semrobotics.frcteam1502'
 version = 'v2025.1.0'
 
 repositories {
