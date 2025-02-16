@@ -457,7 +457,7 @@ public class Builder {
     /**
      * Any of the Power Dstribution Modules
      * @param mpmName - PDP, PDH, MPM (or a named instance), PCM
-     * @param channel "name" or 0 (Integer)
+     * @param channelID "name" or 0 (Integer)
      * @param wireLabel - optional label for wire harness
      * @return
      */
