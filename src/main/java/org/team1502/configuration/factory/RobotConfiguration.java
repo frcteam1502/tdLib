@@ -11,7 +11,9 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+
 import org.team1502.configuration.builders.*;
+import org.team1502.configuration.builders.drives.*;
 import org.team1502.configuration.builders.motors.*;
 import org.team1502.configuration.builders.pneumatics.*;
 import org.team1502.configuration.builders.power.*;
@@ -23,6 +25,13 @@ public class RobotConfiguration {
     private RobotBuilder _robotBuilder;
     private Evaluator _evaluator;
     
+    /** Only explicitly defined subsystems wil be enabled */
+    public static RobotConfiguration Test(String name, Function<RobotConfiguration, RobotConfiguration> fn) {
+        var robot = new RobotConfiguration();
+        robot.name = name;
+        robot.disableUndeclaredSubsystems = true;
+        return fn.apply(robot);
+    }
     public static RobotConfiguration Create(String name, Function<RobotConfiguration, RobotConfiguration> fn) {
         var robot = new RobotConfiguration();
         robot.name = name;
@@ -39,13 +48,28 @@ public class RobotConfiguration {
     private RobotConfiguration(RobotBuilder robotBuilder) {
         _robotBuilder = robotBuilder;
     }
+    private boolean disableUndeclaredSubsystems;
     private HashMap<String, String> disabledMap = new HashMap<>();
     public RobotConfiguration DisableSubsystem(Class<?> subsystemclass) {
          return DisableSubsystem(subsystemclass.getName());
     }
+    public RobotConfiguration DisableSubsystem(Class<?> subsystemclass, Function<RobotBuilder, RobotBuilder> fn) {
+         return DisableSubsystem(subsystemclass.getName());
+    }
+    public RobotConfiguration DisableSubsystem(String className, Function<RobotBuilder, RobotBuilder> fn) {
+        return DisableSubsystem(className);
+    }
     public RobotConfiguration DisableSubsystem(String className) {
         disabledMap.put(className, className);
         return this;
+    }
+    public boolean isSubsystemDisabled(String clsName) {
+        if (disableUndeclaredSubsystems) {
+            if (_robotBuilder.getSubsystem(clsName) == null) {
+                DisableSubsystem(clsName);
+            }
+        }
+        return isDisabled(clsName);
     }
     public boolean isDisabled(String clsName) {
         return disabledMap.containsKey(clsName);
@@ -123,8 +147,8 @@ public class RobotConfiguration {
     public RobotConfiguration Subsystem(String partName) { return new RobotConfiguration((RobotBuilder)Part(partName).Value("robotBuilder")); }
     public Object Value(String valueName) { return _robotBuilder.getPart().Value(valueName); }
 
-    public MotorController MotorController() { return Values().MotorController(); }
-    public MotorController MotorController(String name) { return Values().MotorController(name); }
+    public MotorControllerBuilder MotorController() { return Values().MotorController(); }
+    public MotorControllerBuilder MotorController(String name) { return Values().MotorController(name); }
     public Encoder Encoder() { return Encoder(Encoder.CLASSNAME); }
     public Encoder Encoder(String name) { return Values().Encoder(name); }
     public Solenoid Solenoid(String name) { return Solenoid.WrapPart(_robotBuilder.getPart(), name); }
@@ -136,6 +160,7 @@ public class RobotConfiguration {
     public Chassis Chassis() { return Values().SwerveDrive().Chassis(); }
     public SwerveDriveBuilder SwerveDrive() { return Values().SwerveDrive(); }
     public SwerveModuleBuilder SwerveModule(String name) { return Values().SwerveDrive().SwerveModule(name); }
+    public MecanumDriveBuilder MecanumDrive() { return Values().MecanumDrive(); }
     public PowerDistributionModule MPM(String name) { return Values().MPM(name); }
     public PowerDistributionModule PDH() { return Values().PDH(); }
     public IMU Pigeon2() { return Values().Pigeon2(); }

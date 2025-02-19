@@ -1,4 +1,4 @@
-package org.team1502.configuration.builders.motors;
+package org.team1502.configuration.builders.drives;
 
 import java.util.function.Function;
 
@@ -8,6 +8,7 @@ import org.team1502.configuration.CAN.Manufacturer;
 import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.Connector;
 import org.team1502.configuration.builders.IBuild;
+import org.team1502.configuration.builders.motors.*;
 import org.team1502.configuration.builders.Part;
 import org.team1502.configuration.builders.power.Power;
 
@@ -42,15 +43,15 @@ public class SwerveModuleBuilder extends Builder {
         return this;
     }
 
-    public MotorController TurningMotor() { return MotorController.WrapPart(this, SwerveModuleBuilder.turningMotor); }
-    public SwerveModuleBuilder TurningMotor(Manufacturer manufacturer, Function<MotorController, Builder> fn) {
-        addPart(MotorController.Define(manufacturer), SwerveModuleBuilder.turningMotor, fn);
+    public MotorControllerBuilder TurningMotor() { return MotorControllerBuilder.WrapPart(this, SwerveModuleBuilder.turningMotor); }
+    public SwerveModuleBuilder TurningMotor(Manufacturer manufacturer, Function<MotorControllerBuilder, Builder> fn) {
+        addPart(MotorControllerBuilder.Define(manufacturer), SwerveModuleBuilder.turningMotor, fn);
         return this;
     }
     
-    public MotorController DrivingMotor() { return MotorController.WrapPart(this, SwerveModuleBuilder.drivingMotor); }
-    public SwerveModuleBuilder DrivingMotor(Manufacturer manufacturer, Function<MotorController, Builder> fn) {
-        addPart(MotorController.Define(manufacturer), SwerveModuleBuilder.drivingMotor, fn);
+    public MotorControllerBuilder DrivingMotor() { return MotorControllerBuilder.WrapPart(this, SwerveModuleBuilder.drivingMotor); }
+    public SwerveModuleBuilder DrivingMotor(Manufacturer manufacturer, Function<MotorControllerBuilder, Builder> fn) {
+        addPart(MotorControllerBuilder.Define(manufacturer), SwerveModuleBuilder.drivingMotor, fn);
         return this;
     }
 

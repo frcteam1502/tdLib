@@ -7,12 +7,16 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
 
 public class PID extends Builder {
-    private static final String NAME = "PID"; 
+    private static final String NAME = "PID";
+    private static final String pid_controller = "pid_controller";
     public static Function<IBuild, PID> Define = b->new PID(b);
     public static PID Wrap(Builder builder) { return builder == null ? null : new PID(builder.getIBuild(), builder.getPart()); }
     public static PID WrapPart(Builder builder) { return WrapPart(builder, NAME); }
@@ -49,17 +53,39 @@ public class PID extends Builder {
         setValue("max", max); 
         return this;
     }
+    public PID Constraints(double maxVelocity, double maxAcceleration) {
+        setValue("maxVelocity", maxVelocity); 
+        setValue("maxAcceleration", maxAcceleration); 
+        return this;
+    }
     public PID EnableContinuousInput(double minimumInput, double maximumInput) {
         setValue("minimumInput", minimumInput); 
         setValue("maximumInput", maximumInput); 
         return this;
     }
 
-    public PIDController createPIDController() {
+    public PIDController getPIDController() {
+        var pidController = (PIDController)getValue(pid_controller);
+        return (pidController != null) ? pidController : buildPIDController();
+    }
+    public PIDController buildPIDController() {
         var pidController = new PIDController(P(), I(), D());
         if (hasValue("minimumInput") && hasValue("maximumInput")) {
             pidController.enableContinuousInput(getDouble("minimumInput"), getDouble("maximumInput"));
         }
+        setValue(pid_controller, pidController);
+        return pidController;
+    }
+    public ProfiledPIDController getProfiledPIDController() {
+        var pidController = (ProfiledPIDController)getValue(pid_controller);
+        return (pidController != null) ? pidController : buildProfiledPIDController();
+    }
+    public ProfiledPIDController buildProfiledPIDController() {
+        var pidController = new ProfiledPIDController(P(), I(), D(),
+                                new TrapezoidProfile.Constraints(
+                                    getDouble("maxVelocity"),
+                                    getDouble("maxAcceleration")));
+        setValue(pid_controller, pidController);
         return pidController;
     }
 

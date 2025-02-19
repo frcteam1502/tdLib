@@ -28,6 +28,11 @@ public class TestBuilder implements IBuild {
     public Builder createPart(String partName) { return Builder.DefineAs(partName).apply(this);  }
 
     @Override
+    public <T extends Builder> PartBuilder<T> getTemplate(String partName, Function<T, Builder> buildFunction) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTemplate'");
+    }
+    @Override
     public <T extends Builder> PartBuilder<T> getTemplate(String partName, Function<IBuild, T> createFunction,
             Function<T, Builder> buildFunction) {
         // TODO Auto-generated method stub

@@ -6,7 +6,8 @@ import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
 
-import edu.wpi.first.math.util.Units;
+import static edu.wpi.first.units.Units.Meters;
+import edu.wpi.first.units.measure.Distance;
 
 public class GearBox extends Builder{
     private static final String NAME = "GearBox";
@@ -25,12 +26,12 @@ public class GearBox extends Builder{
         return this;
     }
     public boolean hasActuator() {
-        return hasValue(MotorController.wheelDiameter);
+        return hasValue(MotorControllerBuilder.wheelDiameter);
     }
 
     /** size of actuator attached to gearbox (inches), e.g., wheel arm */
-    public GearBox Wheel(double diameter) {
-        Value(MotorController.wheelDiameter, diameter);
+    public GearBox Wheel(Distance diameter) {
+        Value(MotorControllerBuilder.wheelDiameter, diameter.in(Meters));
         return this;
     }
     
@@ -40,7 +41,7 @@ public class GearBox extends Builder{
         var ratios = stages.stream().map(stage->stage.getDoubleFromInt(Gear.drivingTeeth)/stage.getDoubleFromInt(Gear.drivenTeeth));
         double gearRatio = ratios.reduce(1.0, (stageA,stageB) -> stageA * stageB);
         if (hasActuator()) {
-            gearRatio *= Math.PI * Units.inchesToMeters(getDouble(MotorController.wheelDiameter));
+            gearRatio *= Math.PI * getDouble(MotorControllerBuilder.wheelDiameter);
         }
         return gearRatio;
     }

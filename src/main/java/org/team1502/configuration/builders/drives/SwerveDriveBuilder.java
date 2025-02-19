@@ -1,4 +1,4 @@
-package org.team1502.configuration.builders.motors;
+package org.team1502.configuration.builders.drives;
 
 import java.util.List;
 import java.util.function.*;
@@ -10,8 +10,8 @@ import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.Chassis;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
-import org.team1502.swerve.SwerveDrive;
-import org.team1502.swerve.SwerveModules;
+import org.team1502.drivers.SwerveDrive;
+import org.team1502.drivers.SwerveModules;
 
 public class SwerveDriveBuilder extends Builder {
     public static final String CLASSNAME = "SwerveDrive";

@@ -1,7 +1,7 @@
-package org.team1502.swerve;
+package org.team1502.drivers;
 
 import org.team1502.configuration.builders.motors.ISwerveModule;
-import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
+import org.team1502.configuration.builders.drives.SwerveModuleBuilder;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
@@ -40,7 +40,7 @@ public class SwerveModule implements ISwerveModule, Sendable {
         this.drivePIDController = config.DrivingMotor().getPIDController();
     
         this.turningMotor = config.TurningMotor().buildSparkMax();
-        this.turningPIDController = config.TurningMotor().PID().createPIDController();
+        this.turningPIDController = config.TurningMotor().PID().getPIDController();
     
         this.absEncoder = config.Encoder().buildCANcoder();    
     }

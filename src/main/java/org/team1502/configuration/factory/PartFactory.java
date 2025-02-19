@@ -6,14 +6,11 @@ import java.util.function.Function;
 import org.team1502.configuration.CAN.Manufacturer;
 import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.IBuild;
-import org.team1502.configuration.builders.RoboRIO;
-import org.team1502.configuration.builders.motors.Motor;
-import org.team1502.configuration.builders.motors.MotorController;
-import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
-import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
+import org.team1502.configuration.builders.drives.*;
+import org.team1502.configuration.builders.motors.*;
 import org.team1502.configuration.builders.power.PowerDistributionModule;
-import org.team1502.configuration.builders.sensors.GyroSensor;
-import org.team1502.configuration.builders.sensors.IMU;
+import org.team1502.configuration.builders.RoboRIO;
+import org.team1502.configuration.builders.sensors.*;
 
 public class PartFactory {
     private HashMap<String, PartBuilder<?>> _builderMap = new HashMap<>();
@@ -47,6 +44,11 @@ public class PartFactory {
                 : null;
     }
 
+    public <T extends Builder> PartBuilder<T> getTemplate(String partName, Function<T, Builder> buildFunction) {
+        PartBuilder<T> template = (PartBuilder<T>)getTemplate(partName);
+        return (template != null) ? template.with(buildFunction) : null;
+    }
+    
     public <T extends Builder> PartBuilder<T> getTemplate(String partName, Function<IBuild, T> createFunction, Function<T, Builder> buildFunction) {
         PartBuilder<T> template = (PartBuilder<T>)getTemplate(partName);
         if (template != null) {
@@ -67,8 +69,8 @@ public class PartFactory {
         return addTemplate(name, Motor.Define, fn);
     }
     
-    public PartFactory MotorController(String name, Manufacturer manufacturer, Function<MotorController, Builder> fn) {
-        return addTemplate(name, MotorController.Define(manufacturer), fn);
+    public PartFactory MotorController(String name, Manufacturer manufacturer, Function<MotorControllerBuilder, Builder> fn) {
+        return addTemplate(name, MotorControllerBuilder.Define(manufacturer), fn);
     }
 
     public PartFactory GyroSensor(String name, Manufacturer manufacturer, Function<GyroSensor, Builder> fn) {

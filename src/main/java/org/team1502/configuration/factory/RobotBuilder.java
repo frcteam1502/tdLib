@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import org.team1502.configuration.CAN.Manufacturer;
 import org.team1502.configuration.builders.*;
+import org.team1502.configuration.builders.drives.*;
 import org.team1502.configuration.builders.motors.*;
 import org.team1502.configuration.builders.pneumatics.*;
 import org.team1502.configuration.builders.power.*;
@@ -58,6 +59,14 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
     /** look for top-level parts */
     public Builder findInstalled(String name) { return _buildMap.get(name); }
 
+    public RobotBuilder getSubsystem(String name) {
+        var installed =_subsystemMap.get(name);
+        if (installed == null && _parent != null) {
+            installed = _parent.getSubsystem(name);
+        }
+        return installed;
+    }
+
     @Override // IBuild
     public Builder getInstalled(String name) {
         var installed =_buildMap.get(name);
@@ -88,7 +97,14 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
     }
 
     @Override // IBuild
-    public <T extends Builder> PartBuilder<T> getTemplate(String partName, Function<IBuild, T> createFunction,
+    public <T extends Builder> PartBuilder<T> getTemplate(String partName, Function<T, Builder> buildFunction) {
+        return _partFactory.getTemplate(partName, buildFunction);
+    }
+    
+    @Override // IBuild
+    public <T extends Builder> PartBuilder<T> getTemplate(
+            String partName,
+            Function<IBuild, T> createFunction,
             Function<T, Builder> buildFunction) {
         return _partFactory.getTemplate(partName, createFunction, buildFunction);
     }
@@ -184,7 +200,10 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
         install(subsystem._subsystemPart);
         return this;
     }
-
+    public RobotBuilder DisableSubsystem(Class<?> subsystemClass, Function<RobotBuilder, RobotBuilder> fn) {
+        
+        return this;
+    }
     public Builder Encoder() { return Encoder(Encoder.CLASSNAME); }
     public Builder Encoder(String partName) { return getInstalled(partName); }
     public RobotBuilder Encoder(Function<Encoder, Builder> fn) {  return Encoder(Encoder.CLASSNAME, fn); }
@@ -216,11 +235,11 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
         return installBuilder(name, partName, Motor.Define, fn);
     }    
 
-    public RobotBuilder MotorController(String name, Function<MotorController, Builder> fn) {        
-        return MotorController(name, MotorController.CLASSNAME, fn);
+    public RobotBuilder MotorController(String name, Function<MotorControllerBuilder, Builder> fn) {        
+        return MotorController(name, MotorControllerBuilder.CLASSNAME, fn);
     }    
-    public RobotBuilder MotorController(String name, String partName, Function<MotorController, Builder> fn) {        
-        return installBuilder(name, partName, MotorController.Define(Manufacturer.REVRobotics), fn);
+    public RobotBuilder MotorController(String name, String partName, Function<MotorControllerBuilder, Builder> fn) {        
+        return installBuilder(name, partName, MotorControllerBuilder.Define(Manufacturer.REVRobotics), fn);
     }    
 
     public RobotBuilder SwerveDrive(Function<SwerveDriveBuilder, Builder> fn) {        
@@ -228,6 +247,9 @@ public class RobotBuilder implements IBuild /*extends Builder*/{
     }    
     public RobotBuilder SwerveModule(String name, Function<SwerveModuleBuilder, Builder> fn) {        
         return installBuilder(name, SwerveModuleBuilder.CLASSNAME, SwerveModuleBuilder.Define, fn);
+    }    
+    public RobotBuilder MecanumDrive(Function<MecanumDriveBuilder, Builder> fn) {        
+        return installBuilder(MecanumDriveBuilder.CLASSNAME, MecanumDriveBuilder.CLASSNAME, MecanumDriveBuilder.Define, fn);
     }    
 
     // Basic Parts

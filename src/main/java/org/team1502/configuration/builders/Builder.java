@@ -152,6 +152,10 @@ public class Builder {
     public <T extends Builder> Builder AddPart(Function<IBuild, T> define, Function<T, Builder> fn) {
         return AddPart(new PartBuilder<T>(define, fn));
     }
+    public <T extends Builder> Builder AddPart(String name, Function<IBuild, T> define, Function<T, Builder> fn) {
+        addPart(define, name, fn);
+        return this;
+    }
 
     public <T extends Builder> T addPart(Function<IBuild, T> define, Function<T, Builder> fn) {
         return addPart(new PartBuilder<T>(define, fn));
@@ -209,6 +213,9 @@ public class Builder {
         return addPiece(partBuilder.addBuilder(this, newName));
     }
 
+    public <T extends Builder> Builder addPiece(String newName, String partName, Function<T, Builder> fn) {
+        return addPiece(newName, getIBuild().getTemplate(partName, fn));
+    }
     public <T extends Builder> Builder addPiece(Function<IBuild, T> define, String newName, String partName, Function<T, Builder> fn) {
         return addPiece(newName, getIBuild().getTemplate(partName, define, fn));
     }

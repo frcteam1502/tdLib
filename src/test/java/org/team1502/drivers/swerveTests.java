@@ -1,17 +1,15 @@
-package org.team1502.swerve;
+package org.team1502.drivers;
 
+import static edu.wpi.first.units.Units.Inches;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+
+import org.team1502.configuration.builders.drives.*;
+import org.team1502.configuration.builders.motors.*;
 import org.team1502.configuration.CAN.Manufacturer;
-import org.team1502.configuration.builders.motors.Motor;
-import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
-import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
-import org.team1502.configuration.factory.Evaluator;
-import org.team1502.configuration.factory.FactoryTestsBase;
-import org.team1502.configuration.factory.PartFactory;
-import org.team1502.configuration.factory.RobotConfiguration;
+import org.team1502.configuration.factory.*;
+
 import org.team1502.injection.RobotFactory;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -24,6 +22,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Mecanum1Subsystem;
 
 public class swerveTests {
     @Test
@@ -70,7 +69,7 @@ public class swerveTests {
         robotConfiguration.Build(builder->builder
             .SwerveDrive(sd->sd
                 .Chassis(c -> c
-                    .Square(19.75)
+                    .Square(Inches.of(19.75))
                 )
                 .SwerveModule("Module#1", sm->sm
                     .CanNumber(4)
@@ -111,7 +110,7 @@ public class swerveTests {
     @Test
     public void startSwerveDriveTest() {
 
-        RobotConfiguration robotConfiguration = RobotConfiguration.Create("swerveTest1", fn -> fn
+        RobotConfiguration robotConfiguration = RobotConfiguration.Test("swerveTest1", fn -> fn
             .Parts(inventory -> {
                 Motors(inventory);
                 Mk4iL3(inventory);
@@ -125,7 +124,7 @@ public class swerveTests {
 
                 .SwerveDrive(sd->sd
                     .Chassis(c -> c
-                        .Square(19.75)
+                        .Square(Inches.of(19.75))
                     )
                     .SwerveModule("Module#1", sm->sm
                         .CanNumber(4)
@@ -142,7 +141,7 @@ public class swerveTests {
                 )
             )
         );
-        
+
         //Angle gyroAngle = Units.Degrees.of(0);
     
         RobotFactory factory = RobotFactory.Create(DriveSubsystem.class, robotConfiguration);
@@ -230,7 +229,7 @@ public class swerveTests {
                     .Gear("Stage1", 14, 50)
                     .Gear("Stage2", 28, 16)
                     .Gear("Stage3", 15, 45)
-                    .Wheel(4.0)
+                    .Wheel(Inches.of(4.0))
                 )
                 .PID(.0005, 0.0, 0.0, 1.0)
                 .ClosedLoopRampRate(.5)

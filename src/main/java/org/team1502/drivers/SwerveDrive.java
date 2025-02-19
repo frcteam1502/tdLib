@@ -1,8 +1,8 @@
-package org.team1502.swerve;
+package org.team1502.drivers;
 
 import java.util.function.*;
 
-import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
+import org.team1502.configuration.builders.drives.SwerveDriveBuilder;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;

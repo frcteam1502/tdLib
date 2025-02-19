@@ -1,4 +1,4 @@
-package org.team1502.swerve;
+package org.team1502.drivers;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,8 +10,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.team1502.configuration.builders.motors.SwerveDriveBuilder;
-import org.team1502.configuration.builders.motors.SwerveModuleBuilder;
+import org.team1502.configuration.builders.drives.SwerveDriveBuilder;
+import org.team1502.configuration.builders.drives.SwerveModuleBuilder;
 
 public class SwerveModules implements Sendable {
     SwerveModule[] m_modules;

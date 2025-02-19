@@ -1,5 +1,6 @@
 package org.team1502.configuration;
 
+import static edu.wpi.first.units.Units.Inches;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ public class importTests {
                     .GearBox(g-> g
                         .Gear("Stage1", 10, 60)
                         .Gear("Stage2", 20, 10)
-                        .Wheel(4.0)
+                        .Wheel(Inches.of(4.0))
                     )
                 )
             )

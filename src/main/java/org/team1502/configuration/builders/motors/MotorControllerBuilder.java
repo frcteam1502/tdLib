@@ -12,17 +12,19 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 
 import com.revrobotics.RelativeEncoder;
 
 import org.team1502.configuration.CAN.DeviceType;
 import org.team1502.configuration.CAN.Manufacturer;
 import org.team1502.configuration.builders.Builder;
+import org.team1502.configuration.builders.drives.*;
 import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.builders.Part;
 import org.team1502.configuration.builders.power.Power;
 
-public class MotorController extends Builder {
+public class MotorControllerBuilder extends Builder implements MotorController {
     private static final DeviceType deviceType = DeviceType.MotorController; 
     public static final String CLASSNAME = "MotorController";
 
@@ -36,42 +38,42 @@ public class MotorController extends Builder {
     public static final String angleMax = "angleMax";
     public static final String hasPID = "hasPID"; // has config for built-in pid
     
-    public static final Function<IBuild, MotorController> Define(Manufacturer manufacturer) {
-        return build->new MotorController(build,manufacturer);
+    public static final Function<IBuild, MotorControllerBuilder> Define(Manufacturer manufacturer) {
+        return build->new MotorControllerBuilder(build,manufacturer);
     }
-    public static MotorController Wrap(Builder builder) { return builder == null ? null : new MotorController(builder.getIBuild(), builder.getPart()); }
-    public static MotorController WrapPart(Builder builder) { return WrapPart(builder, CLASSNAME); }
-    public static MotorController WrapPart(Builder builder, String partName) { return Wrap(builder.getPart(partName)); }
+    public static MotorControllerBuilder Wrap(Builder builder) { return builder == null ? null : new MotorControllerBuilder(builder.getIBuild(), builder.getPart()); }
+    public static MotorControllerBuilder WrapPart(Builder builder) { return WrapPart(builder, CLASSNAME); }
+    public static MotorControllerBuilder WrapPart(Builder builder, String partName) { return Wrap(builder.getPart(partName)); }
 
     // Define
-    public MotorController(IBuild build, Manufacturer manufacturer) {
+    public MotorControllerBuilder(IBuild build, Manufacturer manufacturer) {
         super(build, deviceType, manufacturer);
         addConnector(Power.Signal, Power.Vin).FriendlyName(Power.Connector);
         addChannel(Power.Signal, Power.Vout).FriendlyName("Motor Power Out");
     }
-    public MotorController(IBuild build, Part part) {
+    public MotorControllerBuilder(IBuild build, Part part) {
         super(build, part);
     }
     
     public Motor Motor() {return Motor.WrapPart(this, Motor.CLASSNAME); }
-    public MotorController Motor(String partName) {
+    public MotorControllerBuilder Motor(String partName) {
         return Motor(partName, m->m);
     }
-    public MotorController Motor(String partName, Function<Motor, Builder> fn) {
+    public MotorControllerBuilder Motor(String partName, Function<Motor, Builder> fn) {
         var motor = addPart(Motor.Define, Motor.CLASSNAME, partName, fn);
         this.Powers(motor);
         return this;
     }
     
-    public MotorController Follower() { return WrapPart(this, "Follower"); }
-    public MotorController Follower(String partName, Function<MotorController, Builder> fn) {
-        addPart(MotorController.Define(Manufacturer.REVRobotics), "Follower", partName, fn);
+    public MotorControllerBuilder Follower() { return WrapPart(this, "Follower"); }
+    public MotorControllerBuilder Follower(String partName, Function<MotorControllerBuilder, Builder> fn) {
+        addPart(MotorControllerBuilder.Define(Manufacturer.REVRobotics), "Follower", partName, fn);
         return this;
     }
 
 
     public IdleMode IdleMode() { return (IdleMode)getValue(Motor.idleMode); }
-    public MotorController IdleMode(IdleMode value) {
+    public MotorControllerBuilder IdleMode(IdleMode value) {
         setValue(Motor.idleMode, value);
         return this;
     }
@@ -81,58 +83,58 @@ public class MotorController extends Builder {
     }
     
     /** invert the direction of a speed controller */
-    public MotorController Reversed() { return Reversed(true); }
-    public MotorController Reversed(boolean value) {
+    public MotorControllerBuilder Reversed() { return Reversed(true); }
+    public MotorControllerBuilder Reversed(boolean value) {
         setValue(isReversed, value);
         return this;
     }
 
     /** A rotating/revolving actuator with a diameter in inches -- used for position conversion */
-    public MotorController Wheel(double diameter) {
+    public MotorControllerBuilder Wheel(double diameter) {
         Value(wheelDiameter, diameter);
         return this;
     }
     public GearBox GearBox() { return GearBox.WrapPart(this); }
-    public MotorController GearBox(Function<GearBox, Builder> fn) {
-        return (MotorController)AddPart(GearBox.Define, fn);
+    public MotorControllerBuilder GearBox(Function<GearBox, Builder> fn) {
+        return (MotorControllerBuilder)AddPart(GearBox.Define, fn);
     }
 
-    public MotorController AngleController() { return AngleController(-180, 180); }
-    public MotorController AngleController(double minAngle, double maxAngle) {
-        Value(MotorController.isAngleController, true);
-        Value(MotorController.angleMin, minAngle);
-        Value(MotorController.angleMax, maxAngle);
+    public MotorControllerBuilder AngleController() { return AngleController(-180, 180); }
+    public MotorControllerBuilder AngleController(double minAngle, double maxAngle) {
+        Value(MotorControllerBuilder.isAngleController, true);
+        Value(MotorControllerBuilder.angleMin, minAngle);
+        Value(MotorControllerBuilder.angleMax, maxAngle);
         return this;
     }
     
     public PID PID() { return PID.WrapPart(this); }
     /** PID values for built-in CLosed Loop Controller ONLY*/
-    public MotorController PID(Function<PID, Builder> fn) {
+    public MotorControllerBuilder PID(Function<PID, Builder> fn) {
         Value(hasPID, true);
-        return (MotorController)AddPart(PID.Define, fn);
+        return (MotorControllerBuilder)AddPart(PID.Define, fn);
     }
     /** Define a WPIlib PIDController */
-    public MotorController PIDController(Function<PID, Builder> fn) {
-        return (MotorController)AddPart(PID.Define, fn);
+    public MotorControllerBuilder PIDController(Function<PID, Builder> fn) {
+        return (MotorControllerBuilder)AddPart(PID.Define, fn);
     }
     /** PID values for built-in CLosed Loop Controller ONLY*/
-    public MotorController PID(double p, double i, double d) {
+    public MotorControllerBuilder PID(double p, double i, double d) {
         return PID(pid->pid.P(p).I(i).D(d));
     }
     /** PID values for built-in CLosed Loop Controller ONLY */
-    public MotorController PID(double p, double i, double d, double ff) {
+    public MotorControllerBuilder PID(double p, double i, double d, double ff) {
         return PID(pid->pid.P(p).I(i).D(d).FF(ff));
     }
 
     /** Time in seconds to go from 0 to full throttle. */
     public Double ClosedLoopRampRate() { return getDouble(closedLoopRampRate); }
-    public MotorController ClosedLoopRampRate(double rate) {
+    public MotorControllerBuilder ClosedLoopRampRate(double rate) {
         Value(closedLoopRampRate, rate);
         return this;
     }
     /** The current limit in Amps. */
     public Integer SmartCurrentLimit() { return getInt(smartCurrentLimit); }
-    public MotorController SmartCurrentLimit(Integer limit) {
+    public MotorControllerBuilder SmartCurrentLimit(Integer limit) {
         Value(smartCurrentLimit, limit);
         return this;
     }
@@ -147,6 +149,7 @@ public class MotorController extends Builder {
         return CANSparkMax().getClosedLoopController();
     }
 
+    
     public SparkMax buildSparkMax() {
         var max = CANSparkMax(new SparkMax(CanNumber(), Motor().MotorType()));
         SparkMaxConfig config = new SparkMaxConfig();
@@ -193,6 +196,11 @@ public class MotorController extends Builder {
         CANSparkMax().getClosedLoopController().setReference(position, ControlType.kPosition);
         return getRelativeEncoder(); 
     }
+    public double getVelocity() { return getRelativeEncoder().getVelocity(); }
+    public RelativeEncoder setVelocity(double velocity) {
+        CANSparkMax().getClosedLoopController().setReference(velocity, ControlType.kVelocity);
+        return getRelativeEncoder(); 
+    }
 
     SwerveModuleBuilder getSwerveModule() {
         var parent = getParentOfType(SwerveModuleBuilder.CLASSNAME);
@@ -230,7 +238,7 @@ public class MotorController extends Builder {
                 return ratio; //all done and accounted for
             }
         }
-        if (getBoolean(MotorController.isAngleController, false)) {
+        if (getBoolean(MotorControllerBuilder.isAngleController, false)) {
             return 2 * Math.PI * ratio;
         }
         // at this point we have a gear-ratio or 1.0, but for position to make sense we need a length
@@ -242,8 +250,8 @@ public class MotorController extends Builder {
 
     /** meters (1) */
     private double getWheelDiameter() {
-        double inches = findDouble(MotorController.wheelDiameter, Double.NaN);
-        return Double.isNaN(inches) ? 1.0 : Units.inchesToMeters(inches);
+        double diameter = findDouble(MotorControllerBuilder.wheelDiameter, Double.NaN);
+        return Double.isNaN(diameter) ? 1.0 : diameter;
     }
 
     /** meters/second */
@@ -263,5 +271,18 @@ public class MotorController extends Builder {
             Follower().registerLoggerObjects(motorLogger);
         }
     }
+
+    @Override
+    public void set(double speed)  { CANSparkMax().set(speed); }
+    @Override
+    public double get() { return CANSparkMax().get(); }
+    @Override
+    public void setInverted(boolean isInverted) { setValue(isReversed, isInverted);  }
+    @Override
+    public boolean getInverted() { return IsReversed(); }
+    @Override
+    public void disable() { CANSparkMax().disable(); }
+    @Override
+    public void stopMotor() { CANSparkMax().stopMotor(); }
 
 }

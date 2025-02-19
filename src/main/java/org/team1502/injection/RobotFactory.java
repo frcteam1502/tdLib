@@ -60,7 +60,7 @@ public class RobotFactory {
         System.out.println("FACTORY: " + parts.size() + " Subsystems found");
         build();
         for (var part : parts) {
-            System.out.println("FACTORY: " + part.getName() + (part.isBuilt() ? "built" : "not built"));
+            System.out.println("FACTORY: " + part.getName() + (part.isBuilt() ? " built" : " not built"));
         }
     }
 
@@ -74,6 +74,7 @@ public class RobotFactory {
         for (SubsystemFactory subsystemFactory : subsystemFactories) {
             System.out.println("Found " + subsystemFactory.getName() + ", enabled=" + (subsystemFactory.isEnabled() ? "true" : "False"));
             subsystemMap.put(subsystemFactory.getName(), subsystemFactory);
+            configuration.isSubsystemDisabled(subsystemFactory.getName());
             addPart(subsystemFactory);
         }
     }

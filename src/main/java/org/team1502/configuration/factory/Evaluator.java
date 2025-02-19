@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import org.team1502.configuration.builders.Builder;
 import org.team1502.configuration.builders.RoboRIO;
+import org.team1502.configuration.builders.drives.*;
 import org.team1502.configuration.builders.motors.*;
 import org.team1502.configuration.builders.pneumatics.*;
 import org.team1502.configuration.builders.power.*;
@@ -85,7 +86,7 @@ public class Evaluator {
         return (U)fn.apply(builder);    
     }
     private <T extends Builder, U> T getType(String className, Function<Builder, T> wrapper) {
-        var found = _configuration.getInstalledType(MotorController.CLASSNAME);
+        var found = _configuration.getInstalledType(MotorControllerBuilder.CLASSNAME);
         return wrapper.apply(found);
     }
 
@@ -117,14 +118,14 @@ public class Evaluator {
     public <U> U Motor(String partName, Function<Motor, U> fn) {
         return getValue(partName, b->Motor.Wrap(b), fn);   
     }
-    public MotorController MotorController() {
-        return getType(MotorController.CLASSNAME, b->MotorController.Wrap(b));
+    public MotorControllerBuilder MotorController() {
+        return getType(MotorControllerBuilder.CLASSNAME, b->MotorControllerBuilder.Wrap(b));
     }
-    public MotorController MotorController(String partName) {
-        return getValue(partName, b->MotorController.Wrap(b), mc->mc);   
+    public MotorControllerBuilder MotorController(String partName) {
+        return getValue(partName, b->MotorControllerBuilder.Wrap(b), mc->mc);   
     }
-    public <U> U MotorController(String partName, Function<MotorController, U> fn) {
-        return getValue(partName, b->MotorController.Wrap(b), fn);   
+    public <U> U MotorController(String partName, Function<MotorControllerBuilder, U> fn) {
+        return getValue(partName, b->MotorControllerBuilder.Wrap(b), fn);   
     }
     public SwerveModuleBuilder SwerveModule(String partName) {
         return getValue(partName, b->SwerveModuleBuilder.Wrap(b), sm->sm);   
@@ -150,9 +151,14 @@ public class Evaluator {
     }
 
     public SwerveDriveBuilder SwerveDrive() {return SwerveDrive(d->d); }
-
+    
     public <T extends Object> T SwerveDrive(Function<SwerveDriveBuilder, T> fn) {
         return (T)getValue(SwerveDriveBuilder.CLASSNAME, b->SwerveDriveBuilder.Wrap(b), fn);   
+    }
+
+    public MecanumDriveBuilder MecanumDrive() {return MecanumDrive(d->d); }
+    public <T extends Object> T MecanumDrive(Function<MecanumDriveBuilder, T> fn) {
+        return (T)getValue(MecanumDriveBuilder.CLASSNAME, b->MecanumDriveBuilder.Wrap(b), fn);   
     }
 
 }
