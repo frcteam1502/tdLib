@@ -9,7 +9,7 @@ def templateVendorFile = "tdlib-v2025.1.0.json"
 
 def artifactGroupId = 'org.semrobotics.frcteam1502'
 def baseArtifactId = 'tdLib'
-def pubVersion = 'v2025.1.0'
+def pubVersion = 'v2025.2.0'
 def javaBaseName = "_GROUP_org_semrobotics_frcteam1502_ID_${baseArtifactId}-java_CLS"
 
 

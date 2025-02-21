@@ -76,9 +76,9 @@ public class mecanumTests {
                         .CanNumber(14))
                     // MecanumComtroller Command Information
                     .TrajectoryConfig(MetersPerSecond.of(1.0), MetersPerSecondPerSecond.of(3.0))
-                    .PIDController("xController", p->p.Gain(0.5, 0.0, 0.0))
-                    .PIDController("yController", p->p.Gain(0.5, 0.0, 0.0))
-                    .PIDController("thetaController", p->p
+                    .PIDController(MecanumDriver.XController, p->p.Gain(0.5, 0.0, 0.0))
+                    .PIDController(MecanumDriver.YController, p->p.Gain(0.5, 0.0, 0.0))
+                    .PIDController(MecanumDriver.ThetaController, p->p
                         .Gain(0.5, 0.0, 0.0)
                         .Constraints(Math.PI, Math.PI))
                 )

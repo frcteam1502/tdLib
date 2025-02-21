@@ -5,11 +5,6 @@ import java.util.function.Supplier;
 
 import org.team1502.configuration.builders.drives.MecanumDriveBuilder;
 import org.team1502.configuration.builders.motors.MotorControllerBuilder;
-import org.team1502.configuration.builders.motors.PID;
-import org.team1502.drivers.MecanumDriver.Modules;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -18,12 +13,14 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.MecanumControllerCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class MecanumDriver {
+    public static String XController = "xController";
+    public static String YController = "yController";
+    public static String ThetaController = "thetaController";
     final MecanumDrive m_drive;
     final MecanumDriveKinematics m_kinematics;
     final MecanumDriveOdometry m_odometry;
@@ -44,7 +41,7 @@ public class MecanumDriver {
         m_drive = builder.getMecanumDrive();
     }
 
-    public void periodic() {
+    public void update() {
         // Update the odometry in the periodic block
         var rotation = m_yawSupplier.get();
         MecanumDriveWheelPositions distances = getCurrentWheelDistances();
@@ -68,7 +65,23 @@ public class MecanumDriver {
      * @param pose The pose to which to set the odometry.
      */
     public void resetOdometry(Pose2d pose) {
+
         m_odometry.resetPosition(getRotation2d(), getCurrentWheelDistances(), pose);
+    }
+    
+    /** Resets the drive encoders to currently read a position of 0. */
+    public void resetEncoders() {
+        m_modules.resetEncoders();
+    }
+
+    /**
+     * Sets the max output of the drive. Useful for scaling the drive to drive more
+     * slowly.
+     *
+     * @param maxOutput the maximum output to which the drive will be constrained
+     */
+    public void setMaxOutput(double maxOutput) {
+        m_drive.setMaxOutput(maxOutput);
     }
 
     /**
@@ -105,9 +118,9 @@ public class MecanumDriver {
                 trajectory,
                 ()->getPose(),
                 m_kinematics,
-                m_builder.PIDController("xController").getPIDController(),
-                m_builder.PIDController("yController").getPIDController(),
-                m_builder.PIDController("thetaController").getProfiledPIDController(),
+                m_builder.PIDController(XController).getPIDController(),
+                m_builder.PIDController(YController).getPIDController(),
+                m_builder.PIDController(ThetaController).getProfiledPIDController(),
                 m_builder.getDouble("maxVelocity"),
                 m_modules::setDriveMotorControllersVelocity,
                 subsystem);
@@ -140,6 +153,13 @@ public class MecanumDriver {
             m_modules.get(1).buildSparkMax();
             m_modules.get(2).buildSparkMax();
             m_modules.get(3).buildSparkMax();
+
+        }
+        public void resetEncoders() {
+            m_modules.get(0).setPosition(0);
+            m_modules.get(1).setPosition(0);
+            m_modules.get(2).setPosition(0);
+            m_modules.get(3).setPosition(0);
 
         }
         public MecanumDriveWheelPositions getCurrentWheelDistances() {

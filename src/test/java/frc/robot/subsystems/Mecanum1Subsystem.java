@@ -36,11 +36,11 @@ public class Mecanum1Subsystem implements Subsystem {
 
     @Override
     public void periodic() {
-        m_drive.periodic();
+        m_drive.update();
     }
 
     public void resetOdometry(Pose2d pose) { m_drive.resetOdometry(pose); }
-    
+
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
         m_drive.drive(xSpeed, ySpeed, rot, fieldRelative);
     }
