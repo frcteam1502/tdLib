@@ -5,7 +5,7 @@ apply plugin: 'maven-publish'
 
 ext.licenseFile = files("$rootDir/LICENSE.txt")
 
-def templateVendorFile = "tdlib-v2025.1.0.json"
+def templateVendorFile = "tdlib-v2025.json"
 
 def artifactGroupId = 'org.semrobotics.frcteam1502'
 def baseArtifactId = 'tdLib'
