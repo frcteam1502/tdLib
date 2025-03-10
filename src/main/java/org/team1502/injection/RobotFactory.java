@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +19,9 @@ import java.util.stream.Collectors;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+
+import org.team1502.TestSupport;
 import org.team1502.configuration.annotations.*;
-import org.team1502.configuration.builders.IBuild;
 import org.team1502.configuration.factory.RobotBuilder;
 import org.team1502.configuration.factory.RobotConfiguration;
 
@@ -27,7 +31,7 @@ public class RobotFactory {
     private static String subsystemPackageName = "frc/robot/subsystems";
     private static String commandPackageName = "frc/robot/commands";
 
-    public static RobotFactory Create() throws ClassNotFoundException {
+    public static RobotFactory Create() {//} throws ClassNotFoundException {
         return new RobotFactory();
     }
 
@@ -41,6 +45,7 @@ public class RobotFactory {
     private RobotFactory() {}
     
     private RobotFactory(RobotConfiguration config) {
+        jarFile = new File(robotClass.getProtectionDomain().getCodeSource().getLocation().getPath());
         this.configuration = config;
     }
     public RobotConfiguration getRobotConfiguration() { return configuration; }
@@ -52,7 +57,7 @@ public class RobotFactory {
     private List<SubsystemFactory> subsystemFactories;
     private List<CommandFactory> commandFactories;
     private RobotConfiguration configuration;
-    private final File jarFile = new File(robotClass.getProtectionDomain().getCodeSource().getLocation().getPath());
+    private File jarFile;
 
     private void start() {
         System.out.println("FACTORY: Start");
@@ -202,48 +207,50 @@ public class RobotFactory {
 
     @SuppressWarnings("unchecked")
     private Set<Class<Subsystem>> getAllSubsystems() {
-        ClassLoader loader = robotClass.getClassLoader();
-        ArrayList<String> classes = new ArrayList<>();
         
         try {
+            ArrayList<String> classes = new ArrayList<>();
+            ClassLoader loader = getClassLoader();
             if(jarFile.isFile()) {  // Run with JAR file
                 getClasses(subsystemPackageName, classes);
             } else {
                 findClassesIn(subsystemPackageName, loader, classes);
             }
+            
+            return classes.stream()
+                .map(name -> getClass(loader, name))
+                .filter(candidate -> SubsystemFactory.isSubsystem(candidate))
+                .map(candidate -> (Class<Subsystem>)candidate)
+                .collect(Collectors.toSet());
+
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return Collections.EMPTY_SET;
         }
-
-        return classes.stream()
-            .map(name -> getClass(loader, name))
-            .filter(candidate -> SubsystemFactory.isSubsystem(candidate))
-            .map(candidate -> (Class<Subsystem>)candidate)
-            .collect(Collectors.toSet());
     }
 
     @SuppressWarnings("unchecked")
     private Set<Class<Command>> getAllCommands() {
-        ClassLoader loader = robotClass.getClassLoader();
-        ArrayList<String> classes = new ArrayList<>();
-        
         try {
+            ArrayList<String> classes = new ArrayList<>();
+            ClassLoader loader = getClassLoader();
+        
             if(jarFile.isFile()) {  // Run with JAR file
                 getClasses(commandPackageName, classes);
             } else {
                 findClassesIn(commandPackageName, loader, classes);
             }
+            return classes.stream()
+                .map(name -> getClass(loader, name))
+                .filter(line -> CommandFactory.isSubsystem(line))
+                .map(line -> (Class<Command>)line)
+                .collect(Collectors.toSet());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            return Collections.EMPTY_SET;
         }
-
-        return classes.stream()
-            .map(name -> getClass(loader, name))
-            .filter(line -> CommandFactory.isSubsystem(line))
-            .map(line -> (Class<Command>)line)
-            .collect(Collectors.toSet());
     }
  
 
@@ -285,6 +292,32 @@ public class RobotFactory {
             }
             jar.close();
         }
+    }
+
+    ClassLoader getClassLoader() throws IOException {
+        if (TestSupport.getIsTesting()) {
+            return getTestingClassLoader();
+        } else {
+            return robotClass.getClassLoader();
+        }
+    }
+    ClassLoader getTestingClassLoader() throws IOException {
+        var clazzPackage = robotClass.getPackage();
+        var clazzPackageName = clazzPackage.getName();
+        var clazzPath = clazzPackageName.replace('.', '/');
+        String mainUrl = "";
+        //return robotClass.getClassLoader();
+        
+        var resources = robotClass.getClassLoader().getResources(clazzPath);
+        while (resources.hasMoreElements()) {
+            var url = resources.nextElement();
+            System.out.println(url);
+            if (url.getPath().contains("/main/")) {
+                mainUrl = url.toExternalForm() + "/";
+            }
+        }
+        return new URLClassLoader(new URL[]{new URL(mainUrl)});
+
     }
 
 }
