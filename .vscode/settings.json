@@ -58,6 +58,11 @@
     "edu.wpi.first.math.**.proto.*",
     "edu.wpi.first.math.**.struct.*",
   ],
-  "editor.detectIndentation": false
+"editor.detectIndentation": false,
+"workbench.colorTheme": "Default Dark Modern",
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground":"#186818",
+        "titleBar.inactiveBackground":"#1f4f1f"
+    }
 
 }

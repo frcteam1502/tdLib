@@ -48,8 +48,6 @@ public class RobotFactoryTest {
     @Test
     public void findClassesInMain() throws IOException  {
         TestSupport.setIsTesting(true);
-        var class1 = new Class1();
-        class1.show();
         
         // When JUnit testing the 'test' and 'main' are commingled and it looks like 'test' gets precedence
         var mainClassLoader = ClassLoader.getSystemClassLoader();

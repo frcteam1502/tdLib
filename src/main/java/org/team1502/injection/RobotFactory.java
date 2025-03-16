@@ -28,7 +28,7 @@ import org.team1502.configuration.factory.RobotConfiguration;
 public class RobotFactory {
     public static Class<SubsystemInfo> subsystemAnnotation = SubsystemInfo.class;
     private static Class<?> robotClass;
-    private static String subsystemPackageName = "frc/robot/subsystems";
+    private static String subsystemPackageName = "subsystems";
     private static String commandPackageName = "frc/robot/commands";
 
     public static RobotFactory Create() {//} throws ClassNotFoundException {
@@ -218,7 +218,7 @@ public class RobotFactory {
             }
             
             return classes.stream()
-                .map(name -> getClass(loader, name))
+                .map(name -> getClass(loader, "frc.robot." + name))
                 .filter(candidate -> SubsystemFactory.isSubsystem(candidate))
                 .map(candidate -> (Class<Subsystem>)candidate)
                 .collect(Collectors.toSet());
@@ -264,7 +264,7 @@ public class RobotFactory {
     }
 
     private void findClassesIn(String folder, ClassLoader loader, ArrayList<String> classes) throws IOException {
-        InputStream stream = loader.getResourceAsStream(folder);
+        InputStream stream = loader.getResourceAsStream(folder + "/");
         if (stream == null) return;
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         while (reader.ready()) {

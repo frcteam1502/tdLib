@@ -14,6 +14,7 @@ import org.team1502.configuration.builders.drives.SwerveDriveBuilder;
 import org.team1502.configuration.builders.motors.Motor;
 import org.team1502.configuration.builders.motors.MotorControllerBuilder;
 import org.team1502.configuration.factory.Evaluator;
+import org.team1502.configuration.factory.FactoryTestsBase;
 import org.team1502.configuration.factory.RobotConfiguration;
 import org.team1502.injection.RobotFactory;
 
@@ -161,9 +162,12 @@ public class mecanumTests {
         
         var mecanumControllerCommand = driveSubsystem.buildMecanumControllerCommand(exampleTrajectory);
         var command = Commands.sequence(
-        new InstantCommand(() -> driveSubsystem.resetOdometry(exampleTrajectory.getInitialPose())),
-        mecanumControllerCommand,
-        new InstantCommand(() -> driveSubsystem.drive(0, 0, 0, false)));
+            new InstantCommand(() -> driveSubsystem.resetOdometry(exampleTrajectory.getInitialPose())),
+            mecanumControllerCommand,
+            new InstantCommand(() -> driveSubsystem.drive(0, 0, 0, false))
+        );
+    
+        FactoryTestsBase.DumpParts(robotConfiguration);
     }
 
     void dump(List<MotorControllerBuilder> modules) {
