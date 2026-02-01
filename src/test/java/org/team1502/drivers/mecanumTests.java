@@ -168,6 +168,10 @@ public class mecanumTests {
         );
     
         FactoryTestsBase.DumpParts(robotConfiguration);
+
+        for (int i=0; i<4; i++) {
+            modules.m_modules.get(i).CANSparkMax().close(); 
+        }
     }
 
     void dump(List<MotorControllerBuilder> modules) {

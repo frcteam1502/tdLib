@@ -1,16 +1,16 @@
 {
-    "fileName": "tdlib-v2025.json",
+    "fileName": "tdlib-v2026.json",
     "name": "tdlib",
-    "version": "v2025.2.0",
+    "version": "v2026.1.0",
     "uuid": "98dde957-b8a4-4efb-8287-596a8d282b4c6",
-    "frcYear": "2025",
+    "frcYear": "2026",
     "mavenUrls": [ "https://maven.dx-fx.com/"],
-    "jsonUrl": "http://frcteam1502.semrobotics.org/tdlib-v2025.json",
+    "jsonUrl": "http://frcteam1502.semrobotics.org/tdlib-v2026.json",
     "javaDependencies": [
       {
         "groupId": "org.semrobotics.frcteam1502",
         "artifactId": "tdLib-java",
-        "version": "v2025.2.0"
+        "version": "v2026.1.0"
       }
     ],
     "jniDependencies": [],
