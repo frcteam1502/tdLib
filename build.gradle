@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2025.2.1"
+    id "edu.wpi.first.GradleRIO" version "2026.1.1"
 }
 
 java {
@@ -8,6 +8,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 var javaVersion = "17"
+
+var wpilibVersion = "2026.1.1"
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.

@@ -164,6 +164,11 @@ public class mecanumTests {
         new InstantCommand(() -> driveSubsystem.resetOdometry(exampleTrajectory.getInitialPose())),
         mecanumControllerCommand,
         new InstantCommand(() -> driveSubsystem.drive(0, 0, 0, false)));
+
+        for (int i=0; i<4; i++) {
+            modules.m_modules.get(i).CANSparkMax().close(); 
+        }
+
     }
 
     void dump(List<MotorControllerBuilder> modules) {

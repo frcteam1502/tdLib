@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.team1502.TestSupport;
 
 public class RobotFactoryTest {
+    // NOTE: test resources and main resources are both on the classpath during JUnit testing.
+    // NOTE: this is NOT the case when running the robot normally. gradle doesn't publish test code
+
     // As the classpath shows, 'test' and 'main' are both included. I do not know how to search
     // such that I can find all the classes and filter out the test ones.
 
@@ -48,8 +51,6 @@ public class RobotFactoryTest {
     @Test
     public void findClassesInMain() throws IOException  {
         TestSupport.setIsTesting(true);
-        var class1 = new Class1();
-        class1.show();
         
         // When JUnit testing the 'test' and 'main' are commingled and it looks like 'test' gets precedence
         var mainClassLoader = ClassLoader.getSystemClassLoader();
